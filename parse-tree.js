@@ -1,8 +1,5 @@
 
 function main() {
-    console.log("Hello");
-
-
     let tokens = []
     
     //test
@@ -11,10 +8,7 @@ function main() {
 }
 
 
-
 /**
- * 
- * 
  * 
  * Should I have a separate tokenization step, or should I parse the raw input?
  * 
@@ -55,12 +49,8 @@ function tokenizeInput(input) {
         if (inArr[i] == " ") {
             ++i;
         }
-        else if (inArr[i] == "(") {
-            tokens.push("(")
-            ++i;
-        }
-        else if (inArr[i] == ")") {
-            tokens.push(")");
+        else if (inArr[i] == "(" || inArr[i] == ")") {
+            tokens.push(inArr[i]);
             ++i;
         }
         else if (!isNaN((inArr[i]))) {
@@ -68,27 +58,10 @@ function tokenizeInput(input) {
             tokens.push(inArr.slice(i, end).join(""))
             i = end;
         }
-        else if (inArr[i] == "+") {
-            tokens.push("+");
+        else if (isSingleCharOpp(inArr[i])) {
+            tokens.push(inArr[i]);
             ++i;
         }
-        else if (inArr[i] == "-") {
-            tokens.push("-");
-            ++i;
-        }
-        else if (inArr[i] == "*") {
-            tokens.push("*");
-            i++;
-        }
-        else if (inArr[i] == "/") {
-            tokens.push("/");
-            i++;
-        }
-        else if (inArr[i] == "^") {
-            tokens.push("^");
-            i++;
-        }
-
     }
 
     //For debugging
@@ -97,7 +70,6 @@ function tokenizeInput(input) {
 
 }
 
-
 function getNumEnd(input, i) {
     while (i < input.length && (!isNaN(parseInt(input[i]))) || input[i] == "." ) {
         ++i;
@@ -105,21 +77,14 @@ function getNumEnd(input, i) {
     return i;
 }
 
-
-
-
-
-
+function isSingleCharOpp(elem) {
+    const singleCharOpps = ["+","-","*","^","/"];
+    return singleCharOpps.includes(elem);
+}
 
 function parseEquation(tree) {
 
 }
-
-
-
-
-
-
 
 class parseTree {
     constructor(val = null, l = null, r = null) {
@@ -130,6 +95,5 @@ class parseTree {
 
 
 }
-
 
 main();
