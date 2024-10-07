@@ -3,8 +3,10 @@ function main() {
     let tokens = []
     
     //test
-    tokens = tokenizeInput("34 + 555 * (2.699998 - 8) + 2 / 4");
+    //tokens = tokenizeInput("34 + 555 * (2.699998 - 8) + 2 / 4");
     //tokens = tokenizeInput("44+82");
+
+    tokens = tokenizeInput("3+(44*(5+6)/2)-1");
 
     let p = new Parser(tokens);
     console.log(p);
@@ -113,6 +115,14 @@ class Parser {
     
     generateParseTree() {
         let node = this.parseAddSub();
+        this.advanceToken();
+        while (this.curToken) {
+            let operator = this.curToken;
+            this.advanceToken();
+            let rightNode = this.parseAddSub();
+            node = new Node(operator, node, rightNode);
+
+        }
         return node;
     }
     
@@ -154,10 +164,11 @@ class Parser {
             let node = this.generateParseTree();
             if (this.curToken == ")") {
                 this.advanceToken();
+                
                 return node; //maybe declare the node at the top level?
             }
             else {
-                return null;
+                return node;
             }
         }
         else {
