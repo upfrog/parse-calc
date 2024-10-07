@@ -8,6 +8,7 @@ function main() {
 
     tokens = tokenizeInput("3+(44*(5+6)/2)-1");
 
+    //tokens = tokenizeInput("5+3+6")
     let p = new Parser(tokens);
     console.log(p);
     let root = p.generateParseTree(tokens);
@@ -90,11 +91,6 @@ function isSingleCharOpp(elem) {
     return singleCharOpps.includes(elem);
 }
 
-
-
-
-
-
 class Parser {
     constructor(tokens) {
         this.tokens = tokens;
@@ -114,71 +110,48 @@ class Parser {
     }
     
     generateParseTree() {
-        let node = this.parseAddSub();
-        this.advanceToken();
-        while (this.curToken) {
+        let node = this.parseTerm();
+        while (this.curToken && this.curToken != ")") {
             let operator = this.curToken;
             this.advanceToken();
-            let rightNode = this.parseAddSub();
+            let rightNode = this.parseTerm();
             node = new Node(operator, node, rightNode);
 
         }
         return node;
     }
     
-    
-    
-    parseAddSub() {
-        let node = this.parseMultDiv();
-
-        if (this.curToken == "+" || this.curToken == "-") {
-            let opperator = this.curToken;
-            this.advanceToken();
-
-            let rightNode = this.parseMultDiv();
-
-            let newNode = new Node(opperator, node, rightNode);
-            node = newNode;
-        }
-
-        return node;
-    }
-    
-    parseMultDiv() {
-        let node = this.parseValParen();
-
-        if (this.curToken == "*" || this.curToken == "\\") {
-            let operation = this.curToken;
-            this.advanceToken();
-
-            let rightNode = this.parseValParen();
-
-            node = new Node(operation, node, rightNode);
-        }
-        return node;
-    }
-    
-    parseValParen() {
+    parseTerm() {
         if (this.curToken == "(") {
             this.advanceToken();
             let node = this.generateParseTree();
             if (this.curToken == ")") {
                 this.advanceToken();
-                
-                return node; //maybe declare the node at the top level?
-            }
+            } 
             else {
-                return node;
+                throw new Error("Mismatched parentheses.");
             }
+            return node;
+        } 
+        else if (!(isNaN(parseInt(this.curToken)))) {
+            let node = new Node();
+            node.val = this.curToken;
+            this.advanceToken();
+            return node;
         }
-        else {
+        else if (this.curToken == "+" || this.curToken == "-") {
+            let node = new Node();
+            node.val = this.curToken;
+            this.advanceToken();
+            return node;
+        }
+        else if (this.curToken == "*" || this.curToken == "//") {
             let node = new Node();
             node.val = this.curToken;
             this.advanceToken();
             return node;
         }
     }
-
 }
 
 
