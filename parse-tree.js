@@ -10,10 +10,10 @@ function main() {
 
     //tokens = tokenizeInput("5+3+6")
 
-
-    tokens = tokenizeInput("2^3^4^5");
-    tokens = tokenizeInput("3*(5+8/6)^3^4");
     tokens = tokenizeInput("3^(5+2/1)");
+    tokens = tokenizeInput("2^3^4^5");
+    tokens = tokenizeInput("3*(5+8/6)^3^4^(4*7)");
+    
 
     let p = new Parser(tokens);
     console.log(p);
@@ -123,9 +123,8 @@ class Parser {
                 rightNode = this.generateParseTree();
             }
             else {
-                rightNode = this.parseTerm();
+                rightNode = this.parseAddSub();
             }
-            
 
             node = new Node(operator, node, rightNode);
 
@@ -133,6 +132,33 @@ class Parser {
         return node;
     }
     
+
+    parseAddSub() {
+        let node = this.parseMultDiv();
+
+        while (this.curToken == "+" || this.curToken == "-") {
+            let operation = this.curToken;
+            this.advanceToken();
+            let rightNode = this.parseTerm();
+            node = new Node(operation, node, rightNode);
+        }
+        return node;
+        
+    }
+
+    parseMultDiv() {
+        let node = this.parseTerm();
+
+        while (this.curToken == "*" || this.curToken == "/") {
+            let operation = this.curToken;
+            this.advanceToken();
+            let rightNode = this.parseTerm();
+            node = new Node(operation, node, rightNode);
+        }
+
+        return node;
+    }
+
     parseTerm() {
         if (this.curToken == "(") {
             this.advanceToken();
@@ -151,32 +177,8 @@ class Parser {
             this.advanceToken();
             return node;
         }
-        else if (this.curToken == "+" || this.curToken == "-") {
-            let node = new Node();
-            node.val = this.curToken;
-            this.advanceToken();
-            return node;
-        }
-        else if (this.curToken == "*" || this.curToken == "//") {
-            let node = new Node();
-            node.val = this.curToken;
-            this.advanceToken();
-            return node;
-        }
+
     }
-
-    parseExp() {
-        let base = 5;
-    }
-
-
-    /*
-    Approaches for exponentiation:
-        - Have a dedicated getExpGroup method
-        - just wrip off the () approach as much as possible. This is probably the way
-            - problem: ( doesn't preserve the character
-
-    */
 }
 
 
