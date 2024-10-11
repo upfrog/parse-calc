@@ -6,9 +6,15 @@ function main() {
     //tokens = tokenizeInput("34 + 555 * (2.699998 - 8) + 2 / 4");
     //tokens = tokenizeInput("44+82");
 
-    tokens = tokenizeInput("3+(44*(5+6)/2)-1");
+    //tokens = tokenizeInput("3+(44*(5+6)/2)-1");
 
     //tokens = tokenizeInput("5+3+6")
+
+
+    tokens = tokenizeInput("2^3^4^5");
+    tokens = tokenizeInput("3*(5+8/6)^3^4");
+    tokens = tokenizeInput("3^(5+2/1)");
+
     let p = new Parser(tokens);
     console.log(p);
     let root = p.generateParseTree(tokens);
@@ -73,10 +79,7 @@ function tokenizeInput(input) {
             ++i;
         }
     }
-
-    //For debugging
     return tokens;
-
 }
 
 function getNumEnd(input, i) {
@@ -113,8 +116,17 @@ class Parser {
         let node = this.parseTerm();
         while (this.curToken && this.curToken != ")") {
             let operator = this.curToken;
+
             this.advanceToken();
-            let rightNode = this.parseTerm();
+            let rightNode = null;
+            if (operator == "^") {
+                rightNode = this.generateParseTree();
+            }
+            else {
+                rightNode = this.parseTerm();
+            }
+            
+
             node = new Node(operator, node, rightNode);
 
         }
@@ -152,8 +164,20 @@ class Parser {
             return node;
         }
     }
-}
 
+    parseExp() {
+        let base = 5;
+    }
+
+
+    /*
+    Approaches for exponentiation:
+        - Have a dedicated getExpGroup method
+        - just wrip off the () approach as much as possible. This is probably the way
+            - problem: ( doesn't preserve the character
+
+    */
+}
 
 
 class Node {
