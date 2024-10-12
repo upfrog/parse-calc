@@ -31,19 +31,10 @@ TODO:
 */
 function main() {
     let tokens = []
-    
-    //test
-    //tokens = tokenizeInput("34 + 555 * (2.699998 - 8) + 2 / 4");
-    //tokens = tokenizeInput("44+82");
-
-    //tokens = tokenizeInput("3+(44*(5+6)/2)-1");
-
-    //tokens = tokenizeInput("5+3+6")
 
     tokens = tokenizeInput("3^(5+2/1)");
     tokens = tokenizeInput("2^3^4^5");
-    tokens = tokenizeInput("3*(5+8/6)^3^4^(4*7)");
-    
+    tokens = tokenizeInput("3*(5+8/6^3^4^(4*7)");
 
     let p = new Parser(tokens);
     console.log(p);
@@ -139,11 +130,9 @@ class Parser {
         else {
             this.curToken = null;
         }
-        
     }
     
     generateParseTree() {
-
         let node = this.parseAddSub();
         return node;
     }
@@ -183,36 +172,30 @@ class Parser {
 
     parseAddSub() {
         let node = this.parseMultDiv();
-
         while (this.curToken == "+" || this.curToken == "-") {
             let operation = this.curToken;
             this.advanceToken();
-            let rightNode = this.parseMultDiv();
-            node = new Node(operation, node, rightNode);
+            node = new Node(operation, node, this.parseMultDiv());
         }
         return node;
     }
 
     parseMultDiv() {
         let node = this.parseExp();
-
         while (this.curToken == "*" || this.curToken == "/") {
             let operation = this.curToken;
             this.advanceToken();
-            let rightNode = this.parseExp();
-            node = new Node(operation, node, rightNode);
+            node = new Node(operation, node, this.parseMultDiv());
         }
         return node;
     }
 
     parseExp() {
         let node = this.parseTerm();
-
         while (this.curToken == "^") {
             let operation = this.curToken;
             this.advanceToken();
-            let rightNode = this.parseTerm();
-            node = new Node(operation, node, rightNode);
+            node = new Node(operation, node, this.parseMultDiv());
         }
         return node;
     }
@@ -225,7 +208,7 @@ class Parser {
                 this.advanceToken();
             } 
             else {
-                throw new Error("Mismatched parentheses.");
+                throw new Error("Mismatched parentheses");
             }
             return node;
         } 
@@ -235,7 +218,6 @@ class Parser {
             this.advanceToken();
             return node;
         }
-
     }
 }
 
