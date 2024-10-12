@@ -3,8 +3,8 @@ TODO:
 X Clean up parse functions a bit
 X Build in-order traversal
 X Make that traversal evaluate the tree
-- Build some test cases with the current tree structure
-- Fix any bugs
+X Build some test cases with the current tree structure
+X Fix any bugs
 - Build starter GUI
 - Deploy
 - More rigorous input validation
@@ -29,6 +29,9 @@ X Make that traversal evaluate the tree
         - Add highlighting to show which terms on the stack a given operation
             will effect!
 */
+
+/*
+Commented out because I'll be using it later for adding new features.
 function main() {
     let tokens = []
 
@@ -46,8 +49,17 @@ function main() {
     console.log("=======================")
     console.log(root.evalTree());
 
-}
 
+
+}
+*/
+
+function evaluateInput(input) {
+    let tokenized = tokenizeInput(input);
+    let parser = new Parser(tokenized);
+    let root = parser.generateParseTree(tokenized);
+    return root.evalTree();
+}
 
 /**
  * 
@@ -71,13 +83,6 @@ function main() {
  *  -numbers (e)??
  *  -exponents
  * 
- * 
- * 
- * 
- * @param {*} input 
- * @param {*} tokens 
- * @param {*} input_i 
- * @param {*} tokens_i 
  */
 function tokenizeInput(input) {
 
@@ -93,6 +98,11 @@ function tokenizeInput(input) {
         else if (inArr[i] == "(" || inArr[i] == ")") {
             tokens.push(inArr[i]);
             ++i;
+        }
+        else if (inArr[i] == "-" && (i == 0 || inArr[i-1] == "(")) {
+            let end = getNumEnd(inArr, i+1);
+            tokens.push(inArr.slice(i, end).join(""))
+            i = end;
         }
         else if (!isNaN((inArr[i]))) {
             let end = getNumEnd(inArr, i);
@@ -256,11 +266,13 @@ function evalTerm(left, operator, right) {
         case "*":
             return (left * right);
         case "/":
+            if (right == 0) {
+                throw new Error("Cannot divide by zero");
+            }
             return (left / right);
         case "^":
             return (left ** right);
     }
 }
 
-
-main();
+module.exports = evaluateInput;
