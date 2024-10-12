@@ -1,0 +1,22 @@
+{
+  "name": "parse-calc",
+  "version": "0.1.0",
+  "description": "\"A moderately powerful calculator web app, backed by a parse tree.\"",
+  "main": "parse-tree.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/upfrog/parse-calc.git"
+  },
+  "keywords": [
+    "calculator"
+  ],
+  "author": "upfrog",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/upfrog/parse-calc/issues"
+  },
+  "homepage": "https://github.com/upfrog/parse-calc#readme"
+}
