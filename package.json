@@ -18,5 +18,8 @@
   "bugs": {
     "url": "https://github.com/upfrog/parse-calc/issues"
   },
-  "homepage": "https://github.com/upfrog/parse-calc#readme"
+  "homepage": "https://github.com/upfrog/parse-calc#readme",
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }
