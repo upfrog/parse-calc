@@ -1,8 +1,8 @@
 /*
 TODO:
-- Clean up parse functions a bit
-- Build in-order traversal
-- Make that traversal evaluate the tree
+X Clean up parse functions a bit
+X Build in-order traversal
+X Make that traversal evaluate the tree
 - Build some test cases with the current tree structure
 - Fix any bugs
 - Build starter GUI
@@ -34,7 +34,7 @@ function main() {
 
     tokens = tokenizeInput("3^(5+2/1)");
     tokens = tokenizeInput("2^3^4^5");
-    tokens = tokenizeInput("3*(5+8/6^3^4^(4*7)");
+    tokens = tokenizeInput("2^(1+1)");
 
     let p = new Parser(tokens);
     console.log(p);
@@ -42,6 +42,10 @@ function main() {
 
     console.log(root);
     console.log(root.r);
+    console.log("=======================")
+    console.log("=======================")
+    console.log(root.evalTree());
+
 }
 
 
@@ -229,6 +233,34 @@ class Node {
 
         return this;
     }
+
+    evalTree() {
+        //It seems that FOR NOW every node has either 2 or 0 children... Is this true?
+        if (this.l && this.r) {
+            let left = this.l.evalTree();
+            let right = this.r.evalTree();
+            return evalTerm(left, this.val, right);
+        }
+        else {
+            return Number(this.val);
+        }
+    }
 }
+
+function evalTerm(left, operator, right) {
+    switch (operator) {
+        case "+":
+            return (left + right);
+        case "-": 
+            return (left - right);
+        case "*":
+            return (left * right);
+        case "/":
+            return (left / right);
+        case "^":
+            return (left ** right);
+    }
+}
+
 
 main();
