@@ -28,6 +28,8 @@ X Fix any bugs
             much easier to implement
         - Add highlighting to show which terms on the stack a given operation
             will effect!
+    - Multiple themes
+- Somewhere along the way, make a much better GUI
 */
 
 /*
