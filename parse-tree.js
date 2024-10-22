@@ -27,10 +27,20 @@ function main() {
 */
 
 function evaluateInput(input) {
-    let tokenized = tokenizeInput(input);
-    let parser = new Parser(tokenized);
-    let root = parser.generateParseTree(tokenized);
-    return root.evalTree();
+    try {
+        let tokenized = tokenizeInput(input);
+        let parser = new Parser(tokenized);
+        let root = parser.generateParseTree(tokenized);
+        
+        try {
+            return root.evalTree();
+        } catch (Error) {
+            return NaN;
+        }
+    } catch (Error) {
+        return NaN;
+    }
+    
 }
 
 /**
@@ -84,6 +94,9 @@ function tokenizeInput(input) {
         else if (isSingleCharOpp(inArr[i])) {
             tokens.push(inArr[i]);
             ++i;
+        }
+        else {
+            throw new Error("Invalid input");
         }
     }
     return tokens;

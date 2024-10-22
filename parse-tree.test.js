@@ -17,7 +17,7 @@ describe("Basic function tests", () => {
         expect(calc("4/2")).toBe(2);
     });
 
-    test("Test subtraction to below 0", () => {
+    test("Test that subtraction to below 0 returns a negative number", () => {
         expect(calc("3-6")).toBe(-3);
     });
 
@@ -39,8 +39,9 @@ describe("Edge cases", () => {
         expect(calc("0^5")).toBe(0);
     });
 
-    test("Division by zero throws error", () => {
-        expect(() => calc("4/0")).toThrow("Cannot divide by zero");
+    test("Division by zero returns NaN", () => {
+        //expect(() => calc("4/0")).toThrow("Cannot divide by zero");
+        expect(calc("4/0")).toBe(NaN);
     });
     
     test("Positive single number input returns input", () => {
@@ -88,11 +89,45 @@ describe("Test order of operations", () => {
     });
     
     test("Nested parentheses evaluate correctly", () => {
-        expect(calc("((2+3)*2)")).toBe(10);
+        expect(calc("(5-((2+3)*2))")).toBe(-5);
     });
 
     test("Complex expression with multiple operations", () => {
         expect(calc("3+5*2-8/4")).toBe(11);
+    });
+
+    test("Exponentiation is right associative", () => {
+        expect(calc("2^2^3")).toBe(256);
+    });
+})
+
+describe("Test handling of improper input", () => {
+    test("Rejects operator without numbers", () => {
+        expect(calc("+")).toBe(NaN);
+    });
+
+    test("Rejects operator with no second operand", () => {
+        expect(calc("1+")).toBe(NaN);
+    });
+
+    test("Rejects operator with no first operand", () => {
+        expect(calc("+1")).toBe(NaN);
+    });
+
+    test("Rejects meaningless operator spam", () => {
+        expect(calc("^+\\\)")).toBe(NaN);
+    });
+
+    test("Ignores white space", () => {
+        expect(calc("7         *(3^ 2  )")).toBe(63);
+    });
+
+    test("Input with invalid characters returns NaN", () => {
+        expect(calc("Three rings for the Elven kings")).toBe(NaN);
+    });
+
+    test("Input with some invalid characters returns NaN", () => {
+        expect(calc("Three+5")).toBe(NaN);
     });
 })
 

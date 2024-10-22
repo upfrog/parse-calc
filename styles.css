@@ -32,7 +32,7 @@ body {
 
 
 .calcBorder {
-    border: 2px solid #02d4bf;
+    border: 2px solid #02dec8;
     border-radius: 25px ;
     box-shadow: 0px 0px 20px 0px #02d4bf;
 
@@ -47,8 +47,11 @@ body {
     
 
     border: solid 10px;
-    border-color: black;
-    background-color: #797a7a;
+    border-color: #039687;
+    border-radius: 10px;
+    background-color: #04b3a1;
+    box-shadow: inset 0px 0px 20px 20px #02d4bf;
+
     
     
 
@@ -74,7 +77,7 @@ body {
 .controls {
     display: flex;
     align-self: flex-start;
-    margin-left: 5px;
+    margin: 5px;
     gap: 5px;
     pointer-events: none;
 
