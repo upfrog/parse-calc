@@ -4,7 +4,8 @@ const numberKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const symbolKeys = ["*", "/", "+", "-", "^", "(", ")"];
 const curValDisplay = document.querySelector("#currentValue");
 const historyDisplay = document.querySelector("#history");
-let history = [];
+let inputHistory = [];
+let outputHistory = [];
 
 let calc = document.querySelector(".controls");
 calc.addEventListener("keydown", (event) => {
@@ -58,37 +59,27 @@ function processEnterKey() {
     */
     let result = evaluateInput(curValDisplay.textContent);
     let cur = curValDisplay.textContent;
-    history.push(cur);
+    inputHistory.push(cur);
+    outputHistory.push(result);
     curValDisplay.textContent = result;
     updateHistoryDisplay();
     
 }
 
-
+//Adds the most recent operation to the history display
 function updateHistoryDisplay() {
-    console.log(history);
-    historyDisplay.replaceChildren();
-    for (let i in history) {
-        let historyEntry = document.createElement("div");
-        historyEntry.setAttribute("class", "historyElement");
-        
-        //Have result on same line
-        //historyEntry.textContent = history[i] + " = " + curValDisplay.textContent;
-        //historyEntry.appendChild(document.createElement("br"));
+    let originalEntry = document.createElement("div");
+    let equalsEntry = document.createElement("div");
+    let resultEntry = document.createElement("div");
 
-        //Have result on next line
-        historyEntry.textContent = history[i];
-        historyEntry.appendChild(document.createElement("br"));
-        
-        let resultEntry = document.createElement("div");
-        resultEntry.setAttribute("class", "historyElement");
-        resultEntry.textContent = curValDisplay.textContent;
-        resultEntry.appendChild(document.createElement("br"));
-        
-        historyDisplay.appendChild(historyEntry);
-        historyDisplay.appendChild(resultEntry);
-        historyDisplay.scrollTop = historyDisplay.scrollHeight;
-    }
+    originalEntry.textContent = inputHistory.at(-1);
+    equalsEntry.textContent = "=";
+    resultEntry.textContent = outputHistory.at(-1);
+
+    document.querySelector("#original").appendChild(originalEntry);
+    document.querySelector("#equals").appendChild(equalsEntry);
+    document.querySelector("#result").appendChild(resultEntry);
+    historyDisplay.scrollTop = historyDisplay.scrollHeight;
 }
 
 //Expects a string, usually a single character
