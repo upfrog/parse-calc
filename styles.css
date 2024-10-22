@@ -69,9 +69,36 @@ body {
     display: flex;
     align-self: center;
     */
+
+    position: relative;
+
+
+    display: flex;
+    flex-direction: column;
 }
 
 
+.display #history {
+    position: absolute;
+    bottom: 50;
+    min-height: 100px;
+    max-height: 150px;
+
+    width:inherit;
+
+
+    overflow-x: auto;
+}
+
+
+.display #currentValue {
+    color: red;
+    position: absolute;
+    bottom: 0;
+    min-height: 30px;
+    width:inherit;
+
+}
 
 
 .controls {
@@ -126,6 +153,3 @@ button{
 }
 
 
-#currentValue {
-    color: red;
-}
