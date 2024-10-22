@@ -22,13 +22,22 @@ body {
     align-items: center;
     justify-content: center;
 
-    margin-top:100px;
-    border: 30px solid pink;
-    border-radius: 22px;
-    box-shadow: 0px 0px 20px 20px red;
+    border: 30px solid #242626;
+    border-radius: 23px;
+    box-sizing: border-box;
     /*
     background-color: 363636;
     */
+}
+
+
+.calcBorder {
+    border: 2px solid #02d4bf;
+    border-radius: 25px ;
+    box-shadow: 0px 0px 20px 0px #02d4bf;
+
+
+    margin-top:100px;
 }
 
 
@@ -97,7 +106,9 @@ body {
 
 button{
     font-size: 20px;
-    color: #7cdede;
+    font-weight:400;
+    
+    color: #02d4bf;
 
     border-radius: 20px;
     width: 50px;
