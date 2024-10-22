@@ -1,5 +1,9 @@
 body {
+    
     background-color: #363636;
+    /*
+    background-color: #e8e3d3;
+    */
 }
 
 
@@ -8,23 +12,32 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    /*
+    background-color: 363636;
+    */
 }
 
 
 .display {
+    font-family:'Courier New', Courier, monospace;
+
+    
+
     border: solid 10px;
     border-color: black;
     background-color: #797a7a;
     
-    font-family:'Courier New', Courier, monospace;
+    
 
 
     border-radius: 30px 30px 0px 0px;
 
-    width: 200px;
-    height: 100px;
+    width: 320px;
+    height: 200px;
     padding: 20px;
     font-size: 20px;
+    margin: 2px;
+    
 
     /*
     display: flex;

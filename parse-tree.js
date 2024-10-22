@@ -1,35 +1,5 @@
 /*
-TODO:
-X Clean up parse functions a bit
-X Build in-order traversal
-X Make that traversal evaluate the tree
-X Build some test cases with the current tree structure
-X Fix any bugs
-- Build starter GUI
-- Deploy
-- More rigorous input validation
-- Add new features!
-    - Record history
-    - New operators.
-        - Sqrt
-            - May need a custom way to display it - "sqrt()" is a bit lame.
-        - Factorial
-        - Natural log
-        - e?
-        - Trig functions
-            - Keep an eye on degrees vs radians
-        - Absolute Value
-        - Some of these may be best handled by creating a new node type for unary 
-            operators.
-            - For that matter, consider making a dedicated terminal node type
-    - Make sure you can handle floating point math reasonably
-    - RPN mode
-        - Will be best served with a new, stack-based backend, which should be
-            much easier to implement
-        - Add highlighting to show which terms on the stack a given operation
-            will effect!
-    - Multiple themes
-- Somewhere along the way, make a much better GUI
+
 */
 
 /*
