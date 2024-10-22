@@ -17,7 +17,7 @@ TODO:
 - [X] Fix any bugs
 - [X] Build starter GUI
 - [ ] Deploy
-- [ ] More rigorous input validation
+- [X] More rigorous input validation
 - [ ] Add new features!
    - [ ] Record history
    - [ ] New operators
