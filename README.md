@@ -10,7 +10,7 @@ Supported operations:
 
 
 TODO:
-X Clean up parse functions a bit
+- [X] Clean up parse functions a bit
 X Build in-order traversal
 X Make that traversal evaluate the tree
 X Build some test cases with the current tree structure
