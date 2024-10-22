@@ -16,11 +16,17 @@ calc.addEventListener("click", (event) => {
 //I'd kind of like to condense this and handleKeyPress(), but it's fine as is.
 function handleButtonClick(event) {
     let c = event.target.textContent;
-    if (c == "=") {
+    if (event.target.className != "button") {
+        return;
+    }
+    else if (c == "=") {
         processEnterKey();
     }
     else if (c == "C") {
         curVal.textContent = "";
+    }
+    else if (c=="del") {
+        deleteChar();
     }
     else {
         appendChar(event.target.textContent);
@@ -32,6 +38,12 @@ function handleKeyPress(event) {
     if (event.key == "Enter") {
         processEnterKey();
     }
+    else if (
+        event.key == "Backspace" || 
+        event.key == "Delete" ||
+        event.code == "NumpadDecimal") {
+        deleteChar();
+    }
     else if (isValidKey(event.key)) {
         appendChar(event.key);
     }
@@ -42,9 +54,16 @@ function processEnterKey() {
     curVal.textContent = result;
 }
 
+
+
 //Expects a string, usually a single character
 function appendChar(char) {
     curVal.textContent = curVal.textContent + char;
+}
+
+function deleteChar() {
+    let t = curVal.textContent;
+    curVal.textContent = t.slice(0, -1);
 }
 
 function isValidKey(key) {
