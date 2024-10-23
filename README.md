@@ -23,7 +23,7 @@ TODO:
    - [ ] New operators
         - [ ] Sqrt
             - [ ] May want a custom way to display it - "sqrt()" is a bit lame
-        - [ ]  Factorial
+        - [X]  Factorial
         - [ ]  Natural log
         - [ ]  e? (yes, e isn't really an operator)
         - [ ]  Trig functions (*maybe*)

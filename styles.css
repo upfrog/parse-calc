@@ -152,8 +152,9 @@ body {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    max-width: 105px;
+    max-width: 185px;
     gap: 5px;
+
     pointer-events: auto;
 
 }
