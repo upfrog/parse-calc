@@ -260,4 +260,7 @@ function evalTerm(left, operator, right) {
     }
 }
 
+
+//class 
+
 module.exports = evaluateInput;

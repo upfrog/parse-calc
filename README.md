@@ -19,7 +19,7 @@ TODO:
 - [ ] Deploy
 - [X] More rigorous input validation
 - [ ] Add new features!
-   - [ ] Record history
+   - [X] Record history
    - [ ] New operators
         - [ ] Sqrt
             - [ ] May want a custom way to display it - "sqrt()" is a bit lame
