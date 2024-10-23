@@ -32,6 +32,10 @@ describe("Basic function tests", () => {
     test("Test expression with large numbers", () => {
         expect(calc("1000000*1000")).toBe(1000000000);
     });
+
+    test("Test Factorial", () => {
+        expect(calc("3!")).toBe(6);
+    })
 });
 
 describe("Edge cases", () => {
@@ -52,9 +56,15 @@ describe("Edge cases", () => {
         expect(calc("-42")).toBe(-42);
     });
 
+    test("Negative single number in parentheses input returns input", () => {
+        expect(calc("(-42)")).toBe(-42);
+    });
+
     test("Zero divided by integer returns zero", () => {
         expect(calc("0/4")).toBe(0);
     });
+
+
 });
 
 describe("Test negativity interactions", () => {
@@ -99,6 +109,14 @@ describe("Test order of operations", () => {
     test("Exponentiation is right associative", () => {
         expect(calc("2^2^3")).toBe(256);
     });
+
+    test("Factorial stacks with itself", () => {
+        expect(calc("3!!")).toBe(720);
+    });
+
+    test("Factorial fits into order of operations", () => {
+        expect(calc("3!^2")).toBe(36);
+    });
 })
 
 describe("Test handling of improper input", () => {
@@ -129,6 +147,14 @@ describe("Test handling of improper input", () => {
     test("Input with some invalid characters returns NaN", () => {
         expect(calc("Three+5")).toBe(NaN);
     });
+
+    test("Negative factorial returns NaN", () => {
+        expect(calc("(-3)!")).toBe(NaN);
+    })
+
+    test("Factorial without proper operand returns NaN", () => {
+        expect(calc(")!")).toBe(NaN);
+    })
 })
 
 

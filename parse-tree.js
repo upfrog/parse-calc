@@ -1,23 +1,16 @@
 /*
-
-*/
-
-/*
 Commented out because I'll be using it later for adding new features.
+
+
 function main() {
     let tokens = []
-
-    tokens = tokenizeInput("3^(5+2/1)");
-    tokens = tokenizeInput("2^3^4^5");
-    tokens = tokenizeInput("2^(1+1)");
+    tokens = tokenizeInput("(2+2)!^2");
 
     let p = new Parser(tokens);
     console.log(p);
     let root = p.generateParseTree(tokens);
 
-    console.log(root);
-    console.log(root.r);
-    console.log("=======================")
+
     console.log("=======================")
     console.log(root.evalTree());
 
@@ -110,7 +103,7 @@ function getNumEnd(input, i) {
 }
 
 function isSingleCharOpp(elem) {
-    const singleCharOpps = ["+","-","*","^","/"];
+    const singleCharOpps = ["+","-","*","^","/","!"];
     return singleCharOpps.includes(elem);
 }
 
@@ -168,7 +161,6 @@ class Parser {
      * 
      * 
      */
-
     parseAddSub() {
         let node = this.parseMultDiv();
         while (this.curToken == "+" || this.curToken == "-") {
@@ -190,11 +182,23 @@ class Parser {
     }
 
     parseExp() {
-        let node = this.parseTerm();
+        let node = this.parseFact();
+        //let node = this.parseTerm();
         while (this.curToken == "^") {
             let operation = this.curToken;
             this.advanceToken();
             node = new Node(operation, node, this.parseMultDiv());
+        }
+        return node;
+    }
+
+    //Unary operation!
+    parseFact() {
+        let node = this.parseTerm();
+        while (this.curToken == "!") {
+            let operation = this.curToken;
+            this.advanceToken();
+            node = new UniNode(operation, node);
         }
         return node;
     }
@@ -234,33 +238,71 @@ class Node {
         if (this.l && this.r) {
             let left = this.l.evalTree();
             let right = this.r.evalTree();
-            return evalTerm(left, this.val, right);
+            return this.evalTerm(left, this.val, right);
         }
         else {
             return Number(this.val);
         }
     }
-}
 
-function evalTerm(left, operator, right) {
-    switch (operator) {
-        case "+":
-            return (left + right);
-        case "-": 
-            return (left - right);
-        case "*":
-            return (left * right);
-        case "/":
-            if (right == 0) {
-                throw new Error("Cannot divide by zero");
-            }
-            return (left / right);
-        case "^":
-            return (left ** right);
+    evalTerm(left, operator, right) {
+        switch (operator) {
+            case "+":
+                return (left + right);
+            case "-": 
+                return (left - right);
+            case "*":
+                return (left * right);
+            case "/":
+                if (right == 0) {
+                    throw new Error("Cannot divide by zero");
+                }
+                return (left / right);
+            case "^":
+                return (left ** right);
+        }
     }
 }
 
+//Alternative node class for unary operators
+class UniNode {
+    constructor(val = null, child = null) {
+        this.val = val;
+        this.child = child;
 
-//class 
+        return this;
+    }
+
+    evalTree() {
+        if (this.child) {
+            let k = this.child.evalTree();
+            return this.evalTerm(this.val, k);
+        }
+        else {
+            throw new Error("Unary operator must have a target");
+        }
+    }
+
+    evalTerm(operator, child) {
+        switch (operator) {
+            case "!":
+                return this.factorialize(child);
+        }
+    }
+
+    factorialize(value) {
+        if (value < 0) {
+            return NaN;
+        }
+        else {
+            let sum = 1;
+            while (value > 0) {
+                sum = sum * value;
+                value--;
+            }
+            return sum;
+        }
+    }
+}
 
 module.exports = evaluateInput;
