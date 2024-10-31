@@ -107,7 +107,7 @@ describe("Edge cases", () => {
         expect(calc("0/4")).toBe(0);
     });
 
-    test("Numbers starting with decimal", () => {
+    test("Numbers starting with decimal are rejected", () => {
         expect(calc("250.47/.65521")).toBe(382.27438531)
     })
 
@@ -132,15 +132,15 @@ describe("Test negativity interactions", () => {
 });
 
 describe("Test order of operations", () => {
-    test("Order of operations without parentheses", () => {
+    test("Order of operations without parentheses evaluates correctly", () => {
         expect(calc("2+3*4")).toBe(14);
     });
 
-    test("Order of operations with parentheses", () => {
+    test("Order of operations with parentheses evaluates correctly", () => {
         expect(calc("(2+3)*4")).toBe(20);
     });
 
-    test("Parentheses with addition and multiplication", () => {
+    test("Parentheses with addition and multiplication evaluates correctly", () => {
         expect(calc("(2+3)*4")).toBe(20);
     });
     
@@ -148,7 +148,7 @@ describe("Test order of operations", () => {
         expect(calc("(5-((2+3)*2))")).toBe(-5);
     });
 
-    test("Complex expression with multiple operations", () => {
+    test("Complex expression with multiple operations evaluates correctly", () => {
         expect(calc("3+5*2-8/4")).toBe(11);
     });
 
