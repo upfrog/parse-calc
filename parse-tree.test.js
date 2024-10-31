@@ -32,11 +32,54 @@ describe("Basic function tests", () => {
     test("Test expression with large numbers", () => {
         expect(calc("1000000*1000")).toBe(1000000000);
     });
+});
 
-    test("Test Factorial", () => {
-        expect(calc("3!")).toBe(6);
+
+describe("Unary prefix functions", () => {
+    test("Test square root", () => {
+        expect(calc("sqrt(9)")).toBe(3);
+    })
+
+    test("Test sin", () => {
+        expect(calc("sin(9)")).toBe(Number(Math.sin(9).toFixed(8)));
+    })
+
+    test("Test cos", () => {
+        expect(calc("cos(9)")).toBe(Number(Math.cos(9).toFixed(8)));
+    })
+
+    test("Test tan", () => {
+        expect(calc("tan(9)")).toBe(Number(Math.tan(9).toFixed(8)));
     })
 });
+
+
+describe("Unary postfix functions", () => {
+    test("Test factorial", () => {
+        expect(calc("3!")).toBe(6);
+    })
+
+    test("Test factorial of 1", () => {
+        expect(calc("1!")).toBe(1);
+    })
+
+    test("Test factorial of 0", () => {
+        expect(calc("0!")).toBe(1);
+    })
+
+    test("Test stacked factorials", () => {
+        expect(calc("3!!")).toBe(720);
+    })
+
+    test("Test factorial mixed with other operations", () => {
+        expect(calc("3!+3^2")).toBe(15);
+    })
+});
+
+
+
+
+
 
 describe("Edge cases", () => {
     test("Exponentiation with base zero returns zero", () => {
@@ -64,6 +107,9 @@ describe("Edge cases", () => {
         expect(calc("0/4")).toBe(0);
     });
 
+    test("Numbers starting with decimal", () => {
+        expect(calc("250.47/.65521")).toBe(382.27438531)
+    })
 
 });
 

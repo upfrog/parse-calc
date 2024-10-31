@@ -1,21 +1,17 @@
+//Commented out because I'll be using it later for adding new features.
+const DECIMAL_PLACES = 8;
+
 /*
-Commented out because I'll be using it later for adding new features.
-
-
 function main() {
     let tokens = []
-    tokens = tokenizeInput("(2+2)!^2");
+    tokens = tokenizeInput("3*e");
 
     let p = new Parser(tokens);
     console.log(p);
     let root = p.generateParseTree(tokens);
 
-
     console.log("=======================")
     console.log(root.evalTree());
-
-
-
 }
 */
 
@@ -26,8 +22,11 @@ function evaluateInput(input) {
         let root = parser.generateParseTree(tokenized);
         
         try {
-            return root.evalTree();
-        } catch (Error) {
+            let result = root.evalTree();
+            result = roundResult(result);
+            return result;
+        } 
+        catch (Error) {
             return NaN;
         }
     } catch (Error) {
@@ -79,13 +78,42 @@ function tokenizeInput(input) {
             tokens.push(inArr.slice(i, end).join(""))
             i = end;
         }
-        else if (!isNaN((inArr[i]))) {
+        else if (!isNaN((inArr[i])) || inArr[i] == ".") {
             let end = getNumEnd(inArr, i);
             tokens.push(inArr.slice(i, end).join(""))
             i = end;
         }
         else if (isSingleCharOpp(inArr[i])) {
             tokens.push(inArr[i]);
+            ++i;
+        }
+        //I think this creates a vulnerability for just putting in "s", then ending input?
+        //Also, these are messy, and should be condensed.
+
+
+        //This seriously needs condensing!
+        else if ((inArr.slice(i, i+4)).join("") == "sqrt") {
+            tokens.push("sqrt");
+            i += 4;
+        }
+        else if ((inArr.slice(i, i+3)).join("") == "sin") {
+            tokens.push("sin");
+            i += 3;
+        }
+        else if ((inArr.slice(i, i+3)).join("") == "cos") {
+            tokens.push("cos");
+            i += 3;
+        }
+        else if ((inArr.slice(i, i+3)).join("") == "tan") {
+            tokens.push("tan");
+            i += 3;
+        }
+        else if ((inArr.slice(i, i+2)).join("") == "ln") {
+            tokens.push("ln");
+            i += 2;
+        }
+        else if ((inArr[i] == "e")) {
+            tokens.push("e");
             ++i;
         }
         else {
@@ -182,45 +210,84 @@ class Parser {
     }
 
     parseExp() {
-        let node = this.parseFact();
-        //let node = this.parseTerm();
-        while (this.curToken == "^") {
-            let operation = this.curToken;
-            this.advanceToken();
-            node = new Node(operation, node, this.parseMultDiv());
+        let node = this.parsePrefixUnary();
+        while (this.curToken == "^" || this.curToken == "sqrt") {
+            if (this.curToken == "^") {
+                let operation = this.curToken;
+                this.advanceToken();
+                node = new Node(operation, node, this.parseMultDiv());
+            }
+            /*
+            else if (this.curToken == "sqrt") {
+                let operation = this.curToken;
+                this.advanceToken();
+                node = new UniNode(operation, )
+            }
+            */
         }
         return node;
     }
 
-    //Unary operation!
-    parseFact() {
-        let node = this.parseTerm();
-        while (this.curToken == "!") {
+    //This seriously needs condensing!
+    parsePrefixUnary() {
+        if (this.curToken == "sqrt") {
             let operation = this.curToken;
             this.advanceToken();
-            node = new UniNode(operation, node);
+            return new UniNode(operation, this.parseTerm());
         }
-        return node;
+        else if (this.curToken == "sin") {
+            let operation = this.curToken;
+            this.advanceToken();
+            return new UniNode(operation, this.parseTerm());
+        }
+        else if (this.curToken == "cos") {
+            let operation = this.curToken;
+            this.advanceToken();
+            return new UniNode(operation, this.parseTerm());
+        }
+        else if (this.curToken == "tan") {
+            let operation = this.curToken;
+            this.advanceToken();
+            return new UniNode(operation, this.parseTerm());
+        }
+        else if (this.curToken == "ln") {
+            let operation = this.curToken;
+            this.advanceToken();
+            return new UniNode(operation, this.parseTerm());
+        }
+        return this.parseTerm();
     }
 
     parseTerm() {
+        let node;
+
         if (this.curToken == "(") {
             this.advanceToken();
-            let node = this.generateParseTree();
+            node = this.generateParseTree();
             if (this.curToken == ")") {
                 this.advanceToken();
             } 
             else {
                 throw new Error("Mismatched parentheses");
             }
-            return node;
         } 
-        else if (!(isNaN(parseInt(this.curToken)))) {
-            let node = new Node();
+        else if (!(isNaN(parseFloat(this.curToken))) || this.curToken == "e") {
+            node = new Node();
             node.val = this.curToken;
             this.advanceToken();
-            return node;
         }
+
+        return this.parsePostfixUnary(node);
+    }
+
+    //Unary operation!
+    parsePostfixUnary(node) {
+        while (this.curToken == "!") {
+            let operation = this.curToken;
+            this.advanceToken();
+            node = new UniNode(operation, node);
+        }
+        return node;
     }
 }
 
@@ -234,14 +301,18 @@ class Node {
     }
 
     evalTree() {
-        //It seems that FOR NOW every node has either 2 or 0 children... Is this true?
         if (this.l && this.r) {
             let left = this.l.evalTree();
             let right = this.r.evalTree();
             return this.evalTerm(left, this.val, right);
         }
         else {
-            return Number(this.val);
+            if (this.val == "e") {
+                return Math.E;
+            }
+            else {
+                return Number(this.val);
+            }
         }
     }
 
@@ -287,6 +358,16 @@ class UniNode {
         switch (operator) {
             case "!":
                 return this.factorialize(child);
+            case "sin":
+                return Number(Math.sin(child).toFixed(DECIMAL_PLACES));
+            case "cos":
+                return Number(Math.cos(child).toFixed(DECIMAL_PLACES));
+            case "tan":
+                return Number(Math.tan(child).toFixed(DECIMAL_PLACES));
+            case "sqrt":
+                return Number(Math.sqrt(child).toFixed(DECIMAL_PLACES));
+            case "ln":
+                return Number(Math.log(child).toFixed(DECIMAL_PLACES));
         }
     }
 
@@ -305,4 +386,23 @@ class UniNode {
     }
 }
 
+
+function roundResult(result) {
+    if (String(result).includes(".")) {
+        let resultStr = result.toFixed(DECIMAL_PLACES);
+        let i = resultStr.length - 1;
+        while (i > -1) {
+            if (resultStr[i] != "0" && resultStr[i] != ".") {
+                break;
+            }
+            --i;        
+        }
+        return parseFloat(resultStr.slice(0, i+1));
+    }
+    else {
+        return result;
+    }
+}
+
+//main();
 module.exports = evaluateInput;
