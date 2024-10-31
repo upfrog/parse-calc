@@ -39,4 +39,5 @@ TODO:
         - [ ]  Add highlighting to show which terms on the stack a given operation
             will effect!
     - [ ]  Multiple themes
+    - [ ]  Be able to recall elements from history
 - [ ]  Somewhere along the way, make a much better GUI
