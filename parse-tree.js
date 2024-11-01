@@ -1,6 +1,12 @@
 //Commented out because I'll be using it later for adding new features.
 const DECIMAL_PLACES = 8;
 
+/**
+ * TODO:
+ * - get the switch for RPN mode figured out
+ */
+
+
 /*
 function main() {
     let tokens = []
@@ -217,13 +223,6 @@ class Parser {
                 this.advanceToken();
                 node = new Node(operation, node, this.parseMultDiv());
             }
-            /*
-            else if (this.curToken == "sqrt") {
-                let operation = this.curToken;
-                this.advanceToken();
-                node = new UniNode(operation, )
-            }
-            */
         }
         return node;
     }
