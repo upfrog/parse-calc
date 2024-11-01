@@ -14,8 +14,18 @@ calc.addEventListener("click", (event) => {
     handleButtonClick(event);
 })
 
+/*
+historyDisplay.addEventListener("click", (event) => {
+    console.log(event.target.children);
+    if (event.target.classList.includes("historyEntry")) {
+        alert(event.target.textContent);
+    }    
+})
+*/
+
 //I'd kind of like to condense this and handleKeyPress(), but it's fine as is.
 function handleButtonClick(event) {
+
     let c = event.target.textContent;
     if (event.target.className != "button") {
         return;
@@ -35,6 +45,7 @@ function handleButtonClick(event) {
     else {
         appendChar(event.target.textContent);
     }
+
 }
 
 function handleKeyPress(event) {
@@ -72,6 +83,22 @@ function updateHistoryDisplay() {
     let equalsEntry = document.createElement("div");
     let resultEntry = document.createElement("div");
 
+    originalEntry.classList.add("historyEntry");
+    equalsEntry.classList.add("historyEntry");
+    resultEntry.classList.add("historyEntry");
+
+
+    originalEntry.addEventListener("click", (event) => {
+        
+        setCurValDisplay(event.target.textContent);
+         
+    })
+
+    resultEntry.addEventListener("click", (event) => {
+        setCurValDisplay(event.target.textContent);
+    })
+
+
     originalEntry.textContent = inputHistory.at(-1);
     equalsEntry.textContent = "=";
     resultEntry.textContent = outputHistory.at(-1);
@@ -94,6 +121,10 @@ function deleteChar() {
 
 function isValidKey(key) {
     return numberKeys.includes(key) || symbolKeys.includes(key);
+}
+
+function setCurValDisplay(val) {
+    curValDisplay.textContent = val;
 }
 
 function clearHistory() {
