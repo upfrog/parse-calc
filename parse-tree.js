@@ -21,25 +21,106 @@ function main() {
 }
 */
 
-function evaluateInput(input) {
-    try {
-        let tokenized = tokenizeInput(input);
-        let parser = new Parser(tokenized);
-        let root = parser.generateParseTree(tokenized);
-        
+function evaluateInput(val1, val2, op) {
+    //If there is 1 argument, it's a string containing an expression
+    if (arguments.length == 1) {
         try {
-            let result = root.evalTree();
-            result = roundResult(result);
-            return result;
-        } 
-        catch (Error) {
+            let tokenized = tokenizeInput(val1);
+            let parser = new Parser(tokenized);
+            let root = parser.generateParseTree(tokenized);
+            
+            try {
+                let result = root.evalTree();
+                result = roundResult(result);
+                return result;
+            } 
+            catch (Error) {
+                return NaN;
+            }
+        } catch (Error) {
             return NaN;
         }
-    } catch (Error) {
-        return NaN;
+    }
+    //If there are more arguments, then it was parsed by RPN mode
+    else {
+        val1 = parseFloat(val1); //Guaranteed to be at least one operand
+        try {
+            if (arguments.length == 2) {
+                //unary operator
+                return roundResult(evalUnaryTerm(val1, val2))
+    
+            }
+            else if (arguments.length == 3) {
+                //binary operator
+                val2 = parseFloat(val2);
+                return roundResult(evalBinaryTerm(val1, val2, op));
+    
+            }
+            else {
+                return NaN;
+            }
+        } catch (Error) {
+            return NaN;
+        }    
     }
     
 }
+
+
+
+
+//RPN FUNCTIONS
+
+function evalBinaryTerm(left, right, op) {
+    switch (op) {
+        case "+":
+            return (left + right);
+        case "-": 
+            return (left - right);
+        case "*":
+            return (left * right);
+        case "/":
+            if (right == 0) {
+                throw new Error("Cannot divide by zero");
+            }
+            return (left / right);
+        case "^":
+            return (left ** right);
+    }
+    return NaN;
+}
+
+
+function evalUnaryTerm(val, op) {
+    switch (op) {
+        case "!":
+            return UniNode.factorialize(val);
+        case "sin":
+            return Number(Math.sin(val).toFixed(DECIMAL_PLACES));
+        case "cos":
+            return Number(Math.cos(val).toFixed(DECIMAL_PLACES));
+        case "tan":
+            return Number(Math.tan(val).toFixed(DECIMAL_PLACES));
+        case "sqrt":
+            return Number(Math.sqrt(val).toFixed(DECIMAL_PLACES));
+        case "ln":
+            return Number(Math.log(val).toFixed(DECIMAL_PLACES));
+    }
+    return NaN;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * 

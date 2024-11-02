@@ -65,44 +65,6 @@ function evaluateInput(val1, val2, op) {
 
 
 
-function evalBinaryTerm(left, right, op) {
-    switch (op) {
-        case "+":
-            return (left + right);
-        case "-": 
-            return (left - right);
-        case "*":
-            return (left * right);
-        case "/":
-            if (right == 0) {
-                throw new Error("Cannot divide by zero");
-            }
-            return (left / right);
-        case "^":
-            return (left ** right);
-    }
-    return NaN;
-}
-
-
-function evalUnaryTerm(val, op) {
-    switch (op) {
-        case "!":
-            return factorialize(val);
-        case "sin":
-            return Number(Math.sin(val).toFixed(DECIMAL_PLACES));
-        case "cos":
-            return Number(Math.cos(val).toFixed(DECIMAL_PLACES));
-        case "tan":
-            return Number(Math.tan(val).toFixed(DECIMAL_PLACES));
-        case "sqrt":
-            return Number(Math.sqrt(val).toFixed(DECIMAL_PLACES));
-        case "ln":
-            return Number(Math.log(val).toFixed(DECIMAL_PLACES));
-    }
-    return NaN;
-
-}
 
 function roundResult(result) {
     if (String(result).includes(".")) {
