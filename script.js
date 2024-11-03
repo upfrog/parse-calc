@@ -110,6 +110,17 @@ function processInputRPN(c) {
     }
     //Almost all non-numeric characters trigger evaluation in RPN mode
     else {
+        //Make sure that we have enough data to run the operation
+        let nums = inputHistory.length;
+        if (!curValDisplayIsEmpty()) {
+            nums++;
+        }
+        
+        if ((isUnaryOp(c) && nums < 1) ||
+            (isBinaryOp(c) && nums < 2)) {
+            return false;
+        }
+
         let result = "";
 
         if (isBinaryOp(c) && curValDisplayIsEmpty()) {
