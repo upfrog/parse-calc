@@ -1,29 +1,9 @@
-//Commented out because I'll be using it later for adding new features.
 const DECIMAL_PLACES = 8;
-const unaryPrefixOperations = ["sqrt", "sin", "cos", "tan", "ln"];
-
-/**
- * TODO:
- * - get the switch for RPN mode figured out
- */
+const prefixUnaryOperations = ["sqrt", "sin", "cos", "tan", "ln"];
 
 
-/*
-function main() {
-    let tokens = []
-    tokens = tokenizeInput("3*e");
-
-    let p = new Parser(tokens);
-    console.log(p);
-    let root = p.generateParseTree(tokens);
-
-    console.log("=======================")
-    console.log(root.evalTree());
-}
-*/
-
-
-/** Takes some set of calculator inputs, evaluates them, and returns the result.
+/** 
+ * Takes some set of calculator inputs, evaluates them, and returns the result.
  * 
  * This is the only part of parse-tree.js which should be called from outside.
  * 
@@ -40,36 +20,24 @@ function main() {
  */
 function evaluateInput(val1, val2, op) {
     //If there is 1 argument, it's a string containing an expression
-    //Do I need this many try-catch blocks? Can it be condensed to 1?
-    if (arguments.length == 1) {
-        try {
+    try {
+        if (arguments.length == 1) {
             let tokenized = tokenizeInput(val1);
             let parser = new Parser(tokenized);
             let root = parser.generateParseTree(tokenized);
-            
-            try {
-                let result = root.evalTree();
-                result = roundResult(result);
-                return result;
-            } 
-            catch (Error) {
-                return NaN;
+
+            let result = root.evalTree();
+            return roundResult(result);
+        } 
+        //If there are more arguments, then it was parsed by RPN mode
+        else {
+            if (val1 === "e") {
+                val1 = Math.E;
             }
-        } catch (Error) {
-            return NaN;
-        }
-    }
-    //If there are more arguments, then it was parsed by RPN mode
-    else {
-        if (val1 === "e") {
-            val1 = Math.E;
-        }
-        val1 = parseFloat(val1); //Guaranteed to be at least one operand
-        try {
+            val1 = parseFloat(val1); 
             if (arguments.length == 2) {
                 //unary operator
                 return roundResult(evalUnaryTerm(val1, val2))
-    
             }
             else if (arguments.length == 3) {
                 //binary operator
@@ -78,20 +46,16 @@ function evaluateInput(val1, val2, op) {
                 }
                 val2 = parseFloat(val2);
                 return roundResult(evalBinaryTerm(val1, val2, op));
-    
             }
             else {
                 return NaN;
             }
-        } catch (Error) {
-            return NaN;
-        }    
+        }
     }
-    
+    catch (Error) {
+        return NaN;
+    }
 }
-
-
-
 
 //RPN FUNCTIONS
 
@@ -136,37 +100,7 @@ function evalUnaryTerm(val, op) {
 
 
 
-
-
-
-
-
-
-
-
-
-
 /**
- * 
- * Should I have a separate tokenization step, or should I parse the raw input?
- * 
- * I think I should separate them. The downside is that tokenization may be of limited use. It will
- *  be important for numbers, where many digits may only relate to a single number data type, but 
- * it may be less important for other forms of input, which will mean that in many cases the 
- * tokenization brings no benefit.
- * 
- * However, it will also give me a seperate place for input validation, and it will help cover me
- * for the future. I haven't decided exactly what operations to support, but in the long run, 
- * separating tokenization into it's own function, and having the parse function focus on, well,
- * parsing will probably make the code more expandable.
- * 
- * 
- * 
- * What do I need to tokenize and combine?
- *  -numbers (multi-digit, negative)
- *  -numbers (imaginary?)
- *  -numbers (e)??
- *  -exponents
  * 
  */
 function tokenizeInput(input) {
@@ -332,9 +266,8 @@ class Parser {
         return node;
     }
 
-    //This seriously needs condensing!
     parsePrefixUnary() {
-        while (unaryPrefixOperations.includes(this.curToken)) {
+        while (prefixUnaryOperations.includes(this.curToken)) {
             let operation = this.curToken;
             this.advanceToken();
             return new UniNode(operation, this.parsePrefixUnary());
@@ -364,7 +297,6 @@ class Parser {
         return this.parsePostfixUnary(node);
     }
 
-    //Unary operation!
     parsePostfixUnary(node) {
         while (this.curToken == "!") {
             let operation = this.curToken;
@@ -454,8 +386,6 @@ class UniNode {
                 return Number(Math.log(child).toFixed(DECIMAL_PLACES));
         }
     }
-
-
 }
 
 function factorialize(value) {
@@ -489,5 +419,4 @@ function roundResult(result) {
     }
 }
 
-//main();
 module.exports = evaluateInput;
