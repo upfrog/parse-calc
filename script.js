@@ -23,7 +23,8 @@ document.querySelector("#switch").addEventListener("click", () => {
     updateDisplayMode();
 })
 
-/**Takes input in the form of button click or a keyboard key, and processes it.
+/**
+ * Takes input in the form of button click or a keyboard key, and processes it.
  * 
  * @param {event} Some type of input event 
  */
@@ -56,7 +57,8 @@ function handleInput(event) {
     }
 }
 
-/**Implements behavior of "=" button and Enter keys.
+/**
+ * Implements behavior of "=" button and Enter keys.
  * 
  * If in Standard mode, this evaluates the current expression and updates
  * history accordingly. If the mode is RPN, this simply pushes the current
@@ -75,8 +77,19 @@ function processEnterOrEquals() {
     updateHistoryDisplay();
 }
 
-//Adds the most recent operation to the history display
-//This is sooooo repetitive.
+/**
+ * Builds and displays new a history entry for the most recent input.
+ * 
+ * This function only determines how to build the new entry, and refreshes
+ * the scroll. The actual construction is outsourced.
+ * 
+ * An RPN calculator builds it's equations out of smaller building blocks, 
+ * so there is rarely enough context available to cleanly display past
+ * operations for reference. However, it's stack (which, in this 
+ * implementation, is the same as it's history) is an integral part of
+ * how it functions. This means that the two history displays serve
+ * different needs, and so are implemented differently.* 
+ */
 function updateHistoryDisplay() {
     if (modeIsStandard()) {
         createHistoryEntryStandard(inputHistory.at(-1), outputHistory.at(-1));
@@ -87,42 +100,56 @@ function updateHistoryDisplay() {
     historyDisplay.scrollTop = historyDisplay.scrollHeight;
 }
 
-
+/**
+ * Builds and displays three divs to hold a Standard mode history entry.
+ * @param {string} newInputEntry - The input value to be displayed.
+ * @param {string} newOutputEntry - The output value to be displayed.
+ */
 function createHistoryEntryStandard(newInputEntry, newOutputEntry) {
-    const originalEntry = createHistoryEntry(newInputEntry, "value");
-    const equalsEntry = createHistoryEntry("=");
-    const resultEntry = createHistoryEntry(newOutputEntry, "value");
+    const originalEntry = createHistoryDiv(newInputEntry, "value");
+    const equalsEntry = createHistoryDiv("=");
+    const resultEntry = createHistoryDiv(newOutputEntry, "value");
 
     document.querySelector("#original").appendChild(originalEntry);
     document.querySelector("#equals").appendChild(equalsEntry);
     document.querySelector("#result").appendChild(resultEntry);
 }
 
-function createHistoryEntry(content, ...classes) {
+
+/**
+ * Builds and displays one div to hold an RPN mode history entry.
+ * @param {string} newEntry - The number to be displayed.
+ */
+function createHistoryEntryRPN(newEntry) {
+    const entry = createHistoryDiv(newEntry, "historyEntry", "value");
+    document.querySelector("#original").appendChild(entry);
+}
+
+/**
+ * Creates a div with the provided content as text, and zero or more classes.
+ * @param {string} content - The text content the div will display.
+ * @param  {...any} classes - Zero or more classes to be added to the div.
+ * @returns {node} A new div with the inputted content and classes. 
+ */
+function createHistoryDiv(content, ...classes) {
     const entry = document.createElement("div");
     entry.classList.add("historyEntry", ...classes);
     entry.textContent = content;
-    addHistoryElementEventListeners(entry);
+    addHistoryEntryEventListener(entry);
     return entry;
 }
 
-function addHistoryElementEventListeners(node) {
+/**
+ * Adds an event listener to the inputted node allowing for history recall.
+ * @param {node} node
+ */
+function addHistoryEntryEventListener(node) {
     node.addEventListener("click", (event) => {
         setCurValDisplay(event.target.textContent);
     });
 }
 
-/**
- * Creates a new div, adds the historyEntry class, adds an event listener for
- * history recall, set the text, and appends it.
- * 
- * @param {*} newEntry 
- */
-function createHistoryEntryRPN(newEntry) {
-    const entry = createHistoryEntry(newEntry, "historyEntry", "value");
-    addHistoryElementEventListeners(entry);
-    document.querySelector("#original").appendChild(entry);
-}
+
 
 //Expects a string, usually a single character
 function appendChar(char) {
