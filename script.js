@@ -239,7 +239,7 @@ function updateDisplayMode() {
     setCurValDisplay("");
     clearHistory();
 }
-
+/** Creates node for a "+/-" button, which is used in RPN mode. */
 function createToggleNegativeButton() {
     let toggleNegativeBtn = document.createElement("button");
     toggleNegativeBtn.classList.add("button");
@@ -250,25 +250,34 @@ function createToggleNegativeButton() {
     return toggleNegativeBtn;
 }
 
-
-
 /**
- * RPN input is either a number, in which case it gets pushed to the stack, or an operation, in
- * which case either something needs to be taken off the stack, the value in curValDisplay needs
- * to be used, or both.
+ * Processes input when behavior is specifc to RPN mode. 
+ *  
+ * In standard mode, essentially all evaluation can be offloaded to parse-calc. However, in RPN
+ * mode the input to be handed to parse-calc is less consistent, and the decision to evaluate
+ * can come from many more sources (eg pressing +), so more logic is necesarry.
  * 
- * @param {*} c 
- * @returns 
+ * RPN input is either Enter, with a number in curValDsiplay, in which case the number gets pushed 
+ * to the stack (history), or it is an operation, in which case either:
+ *      1) At least one number needs to be taken off the stack 
+ *      2) the value in curValDisplay needs to be used
+ *      3) operands must be taken from both the stack and curValDisplay. 
+ * 
+ * This depends on whether the operation is binary or unary, and whether or not there is a value in
+ * curValDisplay. If there is, we assume that that value is the second operand.
+ * 
+ * This combination of factors determines what to send to parse-calc for evaluation, and what to
+ * remove from the history.* 
+ * @param {string} c - A number or a symbol/operator.
  */
 function processInputRPN(c) {
     if (numberKeys.includes(c)) {
         appendChar(c);
     }
+    //Almost all non-numeric characters trigger evaluation in RPN mode
     else {
         let result = "";
-        //If an operator is binary, we need 2 operands. If it is unary, we only need one.
-        //If there is a value in the display, that will be one of our operands. Otherwise,
-        //we will get all operands from the stack.
+
         if (isBinaryOp(c) && curValDisplayIsEmpty()) {
             result = evaluateInput(inputHistory.at(-2), inputHistory.at(-1), c);
             removeEntriesFromHistory(2);
@@ -290,19 +299,26 @@ function processInputRPN(c) {
     }
 }
 
-
+/**
+ * Implements the toggleNegativity operation.
+ * 
+ * If there is a value in curValDisply, that value's negativity is toggled. Otherwise,
+ * the last value in history has it's negativity toggled.
+ */
 function toggleNegativityOperation() {
-    if (!(curValDisplayIsEmpty())) {
+    if (!curValDisplayIsEmpty()) {
         setCurValDisplay(toggleNegativity(getCurVal()));
     }
     else if (inputHistory.length > 0) {
         let k = inputHistory.length - 1;
-        let historyParent = document.querySelector("#original");
         inputHistory[k] = toggleNegativity(inputHistory[k]);
+
+        let historyParent = document.querySelector("#original");
         historyParent.lastChild.textContent = toggleNegativity(historyParent.lastChild.textContent);
     }
+    //This covers the case that the calculator is complete blank
     else {
-        return; //does nothing. This will run if the user has not entered anything at all
+        return; 
     }
 }
 
