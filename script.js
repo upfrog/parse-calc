@@ -15,11 +15,9 @@ document.addEventListener("keydown", (event) => {
 
 calc.addEventListener("click", (event) => {
     handleButtonClick(event);
-    //alert(event.target);
 })
 
 document.querySelector("#switch").addEventListener("click", (event) => {
-    //alert("current mode: " + curMode);
     toggleModeVariable();
     updateDisplayMode();
 })
@@ -37,7 +35,7 @@ historyDisplay.addEventListener("click", (event) => {
 function handleButtonClick(event) {
 
     let c = event.target.textContent;
-    if (event.target.className != "button") {
+    if (!(event.target.classList.contains("button"))) {
         return;
     }
     else if (c == "=" || c == "Enter") {
@@ -51,6 +49,7 @@ function handleButtonClick(event) {
     }
     else if (c=="CL") {
         clearHistory();
+        curValDisplay.textContent = "";
     }
     else {
         if (modeIsStandard()) {
@@ -64,7 +63,7 @@ function handleButtonClick(event) {
 }
 
 function handleKeyPress(event) {
-    //event.preventDefault(); // Prevents default form submission or other browser actions
+    event.preventDefault(); // Prevents default form submission or other browser actions
     if (event.key == "Backspace" || event.key == "Delete") {
         deleteChar();
     }
@@ -103,45 +102,49 @@ function processEnterKey() {
 //This is sooooo repetitive.
 function updateHistoryDisplay() {
     if (modeIsStandard()) {
-        let originalEntry = document.createElement("div");
-        let equalsEntry = document.createElement("div");
-        let resultEntry = document.createElement("div");
-
-        originalEntry.classList.add("historyEntry");
-        equalsEntry.classList.add("historyEntry");
-        resultEntry.classList.add("historyEntry");
-
-        originalEntry.addEventListener("click", (event) => {
-            
-            setCurValDisplay(event.target.textContent);
-            
-        })
-
-        resultEntry.addEventListener("click", (event) => {
-            setCurValDisplay(event.target.textContent);
-        })
-        
-        originalEntry.textContent = inputHistory.at(-1);
-        equalsEntry.textContent = "=";
-        resultEntry.textContent = outputHistory.at(-1);
-
-        document.querySelector("#original").appendChild(originalEntry);
-        document.querySelector("#equals").appendChild(equalsEntry);
-        document.querySelector("#result").appendChild(resultEntry);
-        historyDisplay.scrollTop = historyDisplay.scrollHeight;
+        createHistoryEntryStandard(inputHistory.at(-1), outputHistory.at(-1));
     }
     else {
-        let entry = document.createElement("div");
-        entry.classList.add("historyEntry");
-        
-        entry.addEventListener("click", (event) => {
-            setCurValDisplay(event.target.textContent);
-        });
-
-        entry.textContent = inputHistory.at(-1);
-        document.querySelector("#original").appendChild(entry);
-        historyDisplay.scrollTop = historyDisplay.scrollHeight;
+        createHistoryEntryRPN(inputHistory.at(-1));
     }
+    historyDisplay.scrollTop = historyDisplay.scrollHeight;
+}
+
+
+function createHistoryEntryStandard(newInputEntry, newOutputEntry) {
+    const originalEntry = createHistoryEntry(newInputEntry, "value");
+    const equalsEntry = createHistoryEntry("=");
+    const resultEntry = createHistoryEntry(newOutputEntry, "value");
+
+    document.querySelector("#original").appendChild(originalEntry);
+    document.querySelector("#equals").appendChild(equalsEntry);
+    document.querySelector("#result").appendChild(resultEntry);
+}
+
+function createHistoryEntry(content, ...classes) {
+    const entry = document.createElement("div");
+    entry.classList.add("historyEntry", ...classes);
+    entry.textContent = content;
+    addHistoryElementEventListeners(entry);
+    return entry;
+}
+
+function addHistoryElementEventListeners(node) {
+    node.addEventListener("click", (event) => {
+        setCurValDisplay(event.target.textContent);
+    });
+}
+
+/**
+ * Creates a new div, adds the historyEntry class, adds an event listener for
+ * history recall, set the text, and appends it.
+ * 
+ * @param {*} newEntry 
+ */
+function createHistoryEntryRPN(newEntry) {
+    const entry = createHistoryEntry(newEntry, "historyEntry", "value");
+    addHistoryElementEventListeners(entry);
+    document.querySelector("#original").appendChild(entry);
 }
 
 //Expects a string, usually a single character
@@ -190,12 +193,37 @@ function modeIsStandard() {
 function updateDisplayMode() {
     if (modeIsStandard()) {
         document.querySelector("#op_equals").textContent = "=";
+        
+        let toggleNegativeBtn = document.querySelector("#op_toggle_negativity");
+        toggleNegativeBtn.id = "misc_openParen"
+        toggleNegativeBtn.textContent = "("
+        toggleNegativeBtn.classList.remove("doubleWidthOperations");
+
+        let closeParen = document.createElement("button");
+        closeParen.classList.add("button");
+        closeParen.id = "misc_closeParen";
+        closeParen.textContent = ")";
+        document.querySelector(".operations").insertBefore(closeParen, toggleNegativeBtn.nextSibling);
     }
     else {
         document.querySelector("#op_equals").textContent = "Enter";
+        let openParen = document.querySelector("#misc_openParen");
+        
+        openParen.replaceWith(createToggleNegativeButton());
+        document.querySelector("#misc_closeParen").replaceWith();
     }
     setCurValDisplay("");
     clearHistory();
+}
+
+function createToggleNegativeButton() {
+    let toggleNegativeBtn = document.createElement("button");
+    toggleNegativeBtn.classList.add("button");
+    toggleNegativeBtn.classList.add("doubleWidthOperations");
+    toggleNegativeBtn.id = "op_toggle_negativity";
+    toggleNegativeBtn.textContent = "+/-"
+
+    return toggleNegativeBtn;
 }
 
 
@@ -208,40 +236,98 @@ function processInputRPN(c) {
         let historyParent = document.querySelector("#original")
         //Check if it's a binary operation
         if (["+", "-", "*", "/", "^"].includes(c)) {
-            //should check if there is an un-entered number in the display
-            //Handling that will require some parsing here - ew!
-            result = evaluateInput(inputHistory.at(-2), inputHistory.at(-1), c);
+            //If there is a number currently being entered, assume it is an operand
+            if (curValDisplay.textContent == "") {
+                result = evaluateInput(inputHistory.at(-2), inputHistory.at(-1), c);
             
-            historyParent.removeChild(historyParent.lastChild);
-            historyParent.removeChild(historyParent.lastChild);
-            inputHistory = inputHistory.slice(0, -2);
+                historyParent.removeChild(historyParent.lastChild);
+                historyParent.removeChild(historyParent.lastChild);
+                inputHistory = inputHistory.slice(0, -2);
+            }
+            else {
+                result = evaluateInput(inputHistory.at(-1), curValDisplay.textContent, c);
             
+                historyParent.removeChild(historyParent.lastChild);
+                inputHistory = inputHistory.slice(0, -1);
+            }
+            
+            curValDisplay.textContent = "";
             inputHistory.push(result);
             updateHistoryDisplay();
         }
+        else if (c == "+/-") {            
+            if (curValDisplay.textContent.length > 0) {
+                alert("changing cur val")
+                curValDisplay.textContent = toggleNegativity(curValDisplay.textContent);
+            }
+            else if (inputHistory.length > 0) {
+                alert("changing history")
+                inputHistory[inputHistory.length-1] = toggleNegativity(inputHistory[inputHistory.length-1]);
+                historyParent.lastChild.textContent = toggleNegativity(historyParent.lastChild.textContent);
+            }
+            else {
+                alert("in else")
+                return; //does nothing. This will run if the user has not entered anythign at all
+            }
+
+        }
         else {
-            result = evaluateInput(inputHistory.at(-1), c);
+            if (curValDisplay.textContent == "") {
+                result = evaluateInput(inputHistory.at(-1), c);
             
-            historyParent.removeChild(historyParent.lastChild);
-            inputHistory = inputHistory.slice(0, -1);
+                historyParent.removeChild(historyParent.lastChild);
+                inputHistory = inputHistory.slice(0, -1);
+                
+            }
+            else {
+                result = evaluateInput(curValDisplay.textContent, c);
+            }
+            curValDisplay.textContent = "";
             inputHistory.push(result);
             updateHistoryDisplay();
+            
         }
 
     }
 }
 
+/**Returns the input with a toggled sign
+ * 
+ * @param {*} num 
+ */
+function toggleNegativity(num) {
+    if (isNegative(num)) {
+        return num.slice(1);
+    }
+    else {
+        return ("-" + num);
+    }
+}
+
+function isNegative(num) {
+    return (num.slice(0,1) == "-")
+}
+
+
+
 
 
 function clearHistory() {
-    inputHistory = [];
-    outputHistory = [];
+    clearHistoryDisplay();
+    clearLogicalHistory();    
+}
+
+function clearHistoryDisplay() {
     document.querySelector("#original").replaceChildren();
     //Clearing these is unnecesarry for RPN mode
     document.querySelector("#equals").replaceChildren();
     document.querySelector("#result").replaceChildren();
 }
 
+function clearLogicalHistory() {
+    inputHistory = [];
+    outputHistory = [];
+}
 
 
 /*

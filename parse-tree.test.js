@@ -1,6 +1,6 @@
 const calc = require("./parse-tree");
 
-describe("Basic function tests", () => {
+describe("Test binary operators", () => {
     test("Test addition", () => {
         expect(calc("4+2")).toBe(6);
     });
@@ -35,7 +35,7 @@ describe("Basic function tests", () => {
 });
 
 
-describe("Unary prefix functions", () => {
+describe("Test unary prefix functions", () => {
     test("Test square root", () => {
         expect(calc("sqrt(9)")).toBe(3);
     })
@@ -54,7 +54,7 @@ describe("Unary prefix functions", () => {
 });
 
 
-describe("Unary postfix functions", () => {
+describe("Test unary postfix functions", () => {
     test("Test factorial", () => {
         expect(calc("3!")).toBe(6);
     })
@@ -170,11 +170,11 @@ describe("Test handling of improper input", () => {
         expect(calc("+")).toBe(NaN);
     });
 
-    test("Rejects operator with no second operand", () => {
+    test("Rejects binary operator with no second operand", () => {
         expect(calc("1+")).toBe(NaN);
     });
 
-    test("Rejects operator with no first operand", () => {
+    test("Rejects binary operator with no first operand", () => {
         expect(calc("+1")).toBe(NaN);
     });
 
@@ -204,7 +204,91 @@ describe("Test handling of improper input", () => {
 })
 
 
+describe("Test binary operators in RPN", () => {
 
+    test("Test addition", () => {
+        expect(calc("4", "2", "+")).toBe(6);
+    });
+
+    test("Test subtraction", () => {
+        expect(calc("4", "2", "-")).toBe(2);
+    });
+
+    test("Test multiplication", () => {
+        expect(calc("4", "2", "*")).toBe(8);
+    });
+
+    test("Test division", () => {
+        expect(calc("4", "2", "/")).toBe(2);
+    });
+
+    test("Test that subtraction to below 0 returns a negative number", () => {
+        expect(calc("2", "4", "-")).toBe(-2);
+    });
+
+    test("Test exponentiation with positive integers", () => {
+        expect(calc("2", "3", "^")).toBe(8);
+    });
+
+});
+
+
+
+describe("Test unary operators in RPN", () => {
+    test("Test square root", () => {
+        expect(calc("9", "sqrt")).toBe(3);
+    })
+
+    test("Test sin", () => {
+        expect(calc("9", "sin")).toBe(Number(Math.sin(9).toFixed(8)));
+    })
+
+    test("Test cos", () => {
+        expect(calc("9", "cos")).toBe(Number(Math.cos(9).toFixed(8)));
+    })
+
+    test("Test tan", () => {
+        expect(calc("9", "tan")).toBe(Number(Math.tan(9).toFixed(8)));
+    })
+
+    test("Test factorial", () => {
+        expect(calc("3", "!")).toBe(6);
+    })
+});
+
+describe("Test handling of improper input in RPN", () => {
+    test("Rejects operator without numbers", () => {
+        expect(calc("+", "+")).toBe(NaN);
+    });
+
+    test("Rejects binary operator with no second operand", () => {
+        expect(calc("1", "+")).toBe(NaN);
+    });
+
+    test("Rejects operator with no first operand", () => {
+        expect(calc("+", "1")).toBe(NaN);
+    });
+
+    test("Rejects meaningless operator spam", () => {
+        expect(calc("^+\\", "\*")).toBe(NaN);
+    });
+
+    test("Ignores white space", () => {
+        expect(calc("7     ", "     5", "+")).toBe(12);
+    });
+
+    test("Input with invalid characters returns NaN", () => {
+        expect(calc("Three rings for", "the Elven kings", "+")).toBe(NaN);
+    });
+
+    test("Input with some invalid characters returns NaN", () => {
+        expect(calc("Three", "5", "+")).toBe(NaN);
+    });
+
+    test("Negative factorial returns NaN", () => {
+        expect(calc("-3", "!")).toBe(NaN);
+    })
+})
 
 
 

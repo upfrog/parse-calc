@@ -21,8 +21,25 @@ function main() {
 }
 */
 
+
+/** Takes some set of calculator inputs, evaluates them, and returns the result.
+ * 
+ * This is the only part of parse-tree.js which should be called from outside.
+ * 
+ * Takes up to three parameters, with the quantity of parameters determining
+ * whether the input should be evaluated infix (standard) or postfix (Reverse
+ * Polish Notation - RPN).
+ * 
+ * @param {String} val1     One of at most two operands, or a complete 
+ *                          mathematical expression.
+ * @param {String} val2     The second of two operands, or a unary operator
+ *                          to be applied to val1. Optional.
+ * @param {String} op       A binary operator to be applied to val1 and val2. Optional.
+ * @returns The result of the entered mathematical expression.
+ */
 function evaluateInput(val1, val2, op) {
     //If there is 1 argument, it's a string containing an expression
+    //Do I need this many try-catch blocks? Can it be condensed to 1?
     if (arguments.length == 1) {
         try {
             let tokenized = tokenizeInput(val1);
@@ -94,7 +111,7 @@ function evalBinaryTerm(left, right, op) {
 function evalUnaryTerm(val, op) {
     switch (op) {
         case "!":
-            return UniNode.factorialize(val);
+            return factorialize(val);
         case "sin":
             return Number(Math.sin(val).toFixed(DECIMAL_PLACES));
         case "cos":
@@ -437,7 +454,7 @@ class UniNode {
     evalTerm(operator, child) {
         switch (operator) {
             case "!":
-                return this.factorialize(child);
+                return factorialize(child);
             case "sin":
                 return Number(Math.sin(child).toFixed(DECIMAL_PLACES));
             case "cos":
@@ -451,21 +468,22 @@ class UniNode {
         }
     }
 
-    factorialize(value) {
-        if (value < 0) {
-            return NaN;
-        }
-        else {
-            let sum = 1;
-            while (value > 0) {
-                sum = sum * value;
-                value--;
-            }
-            return sum;
-        }
-    }
+
 }
 
+function factorialize(value) {
+    if (value < 0) {
+        return NaN;
+    }
+    else {
+        let sum = 1;
+        while (value > 0) {
+            sum = sum * value;
+            value--;
+        }
+        return sum;
+    }
+}
 
 function roundResult(result) {
     if (String(result).includes(".")) {
