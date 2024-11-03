@@ -322,7 +322,10 @@ function toggleNegativityOperation() {
     }
 }
 
-//This only works for RPN
+/**
+ * Removes some number of RPN-style history entries from the back and front end.
+ * @param {number} num - The number of history entries to be removed.
+ */
 function removeEntriesFromHistory(num) {
     inputHistory = inputHistory.slice(0, (num * (-1)));
     let parent = document.querySelector("#original"); //from .display#history
@@ -332,9 +335,11 @@ function removeEntriesFromHistory(num) {
     }
 }
 
-/**Returns the input with a toggled sign
+/**
+ * Toggles the sign of a string representation of a number.
  * 
- * @param {*} num 
+ * Is there any point to doing this instead of String(-1*(Number(num)))? 
+ * @param {string} num - A string representation of a number.
  */
 function toggleNegativity(num) {
     if (isNegative(num)) {
@@ -365,25 +370,3 @@ function clearLogicalHistory() {
     inputHistory = [];
     outputHistory = [];
 }
-
-
-
-/*
-High level. Am I better off:
-1) doing some sort of elaborate re-write to use a different set of methods under
-different circumstances?
-2) burning everything down and re-writing this in an object-oriented way?
-3) adding mode checks in my functions, and then making them behave accordingly?
-    - I feel like this is the way.
-
-1) produces something complicated, with lots of new writing. 2) also has
-lots of re-writing, and I don't think I'll be able to reuse a huge amount. 3)
-still has some re-writing to be done, but it's not as bad.
-
-
-May want to decouple "send to backend" from "enter was pressed"
-
-Maybe exploit the difference between an event with button text "=" vs "enter"?
-
-
-*/
