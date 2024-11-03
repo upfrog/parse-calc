@@ -32,7 +32,7 @@ function handleInput(event) {
     let val = (event.key == undefined) ?  event.target.textContent : event.key;
     
     if (val == "=" || val == "Enter") {
-        processEnterKey();
+        processEnterOrEquals();
     }
     else if (val == "C") {
         setCurValDisplay("");
@@ -56,22 +56,23 @@ function handleInput(event) {
     }
 }
 
-function processEnterKey() {
+/**Implements behavior of "=" button and Enter keys.
+ * 
+ * If in Standard mode, this evaluates the current expression and updates
+ * history accordingly. If the mode is RPN, this simply pushes the current
+ * expression to the history - which is itself a simpler operation in RPN. * 
+ */
+function processEnterOrEquals() {
+    inputHistory.push(getCurVal());
     if (modeIsStandard()) {
-        let result = evaluateInput(curValDisplay.textContent);
-        let cur = curValDisplay.textContent;
-        inputHistory.push(cur);
+        let result = evaluateInput(getCurVal());
         outputHistory.push(result);
-        curValDisplay.textContent = result;
-        updateHistoryDisplay();
+        setCurValDisplay(result);
     }
     else if (modeIsRPN()) {
-        let cur = curValDisplay.textContent;
-        inputHistory.push(cur);
-        curValDisplay.textContent = "";
-        updateHistoryDisplay();
+        setCurValDisplay("");
     }
-    
+    updateHistoryDisplay();
 }
 
 //Adds the most recent operation to the history display
