@@ -1,14 +1,16 @@
+//In order to execute, a symbol should be in one of these arrays.
 const numberKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "e"];
 const symbolKeys = ["*", "/", "+", "-", "^", "(", ")"];
 const binaryOperations = ["*", "/", "+", "-", "^"];
 const unaryOperations = ["!", "sqrt", "sin", "cos", "tan", "ln", "+/-"]
+
 const curValDisplay = document.querySelector("#currentValue");
 const historyDisplay = document.querySelector("#history");
+let calc = document.querySelector(".controls");
+
 let inputHistory = [];
 let outputHistory = [];
 let curMode = "Standard"
-
-let calc = document.querySelector(".controls");
 
 document.addEventListener("keydown", (event) => {
     handleInput(event)
@@ -21,6 +23,12 @@ calc.addEventListener("click", (event) => {
 document.querySelector("#switch").addEventListener("click", () => {
     toggleModeVariable();
 })
+
+/*
+===============================================================
+INPUT PROCESSING FUNCTIONS
+===============================================================
+*/
 
 /**
  * Takes input in the form of button click or a keyboard key, and processes it.
@@ -74,180 +82,6 @@ function processEnterOrEquals() {
         setCurValDisplay("");
     }
     updateHistoryDisplay();
-}
-
-/**
- * Builds and displays new a history entry for the most recent input.
- * 
- * This function only determines how to build the new entry, and refreshes
- * the scroll. The actual construction is outsourced.
- * 
- * An RPN calculator builds it's equations out of smaller building blocks, 
- * so there is rarely enough context available to cleanly display past
- * operations for reference. However, it's stack (which, in this 
- * implementation, is the same as it's history) is an integral part of
- * how it functions. This means that the two history displays serve
- * different needs, and so are implemented differently.* 
- */
-function updateHistoryDisplay() {
-    if (modeIsStandard()) {
-        createHistoryEntryStandard(inputHistory.at(-1), outputHistory.at(-1));
-    }
-    else {
-        createHistoryEntryRPN(inputHistory.at(-1));
-    }
-    historyDisplay.scrollTop = historyDisplay.scrollHeight;
-}
-
-/**
- * Builds and displays three divs to hold a Standard mode history entry.
- * @param {string} newInputEntry - The input value to be displayed.
- * @param {string} newOutputEntry - The output value to be displayed.
- */
-function createHistoryEntryStandard(newInputEntry, newOutputEntry) {
-    const originalEntry = createHistoryDiv(newInputEntry, "value");
-    const equalsEntry = createHistoryDiv("=");
-    const resultEntry = createHistoryDiv(newOutputEntry, "value");
-
-    document.querySelector("#original").appendChild(originalEntry);
-    document.querySelector("#equals").appendChild(equalsEntry);
-    document.querySelector("#result").appendChild(resultEntry);
-}
-
-
-/**
- * Builds and displays one div to hold an RPN mode history entry.
- * @param {string} newEntry - The number to be displayed.
- */
-function createHistoryEntryRPN(newEntry) {
-    const entry = createHistoryDiv(newEntry, "historyEntry", "value");
-    document.querySelector("#original").appendChild(entry);
-}
-
-/**
- * Creates a div with the provided content as text, and zero or more classes.
- * @param {string} content - The text content the div will display.
- * @param  {...any} classes - Zero or more classes to be added to the div.
- * @returns {node} A new div with the inputted content and classes. 
- */
-function createHistoryDiv(content, ...classes) {
-    const entry = document.createElement("div");
-    entry.classList.add("historyEntry", ...classes);
-    entry.textContent = content;
-    addHistoryEntryEventListener(entry);
-    return entry;
-}
-
-/**
- * Adds an event listener to the inputted node allowing for history recall.
- * @param {node} node
- */
-function addHistoryEntryEventListener(node) {
-    node.addEventListener("click", (event) => {
-        setCurValDisplay(event.target.textContent);
-    });
-}
-
-//Expects a string, usually a single character
-function appendChar(char) {
-    curValDisplay.textContent = curValDisplay.textContent + char;
-}
-
-function deleteChar() {
-    let t = curValDisplay.textContent;
-    curValDisplay.textContent = t.slice(0, -1);
-}
-
-function isValidKey(key) {
-    return numberKeys.includes(key) || symbolKeys.includes(key) || binaryOperations.includes(key) || unaryOperations.includes(key);
-}
-
-function setCurValDisplay(val) {
-    curValDisplay.textContent = val;
-}
-
-function getCurVal() {
-    return curValDisplay.textContent;
-}
-
-function curValDisplayIsEmpty() {
-    return (curValDisplay.textContent.length == 0);
-}
-
-
-
-
-
-
-function isBinaryOp(c) {
-    return binaryOperations.includes(c);
-}
-
-function isUnaryOp(c) {
-    return unaryOperations.includes(c);
-}
-
-
-/*
-DISPLAY MODE FUNCTIONS
-*/
-
-/** Switches the current display mode, then calls helper function to rebuild display. */
-function toggleModeVariable() {
-    if (curMode === "Standard") {
-        curMode = "RPN";
-    }
-    else if (curMode === "RPN") {
-        curMode = "Standard";
-    }
-    updateDisplayMode();
-}
-
-function modeIsStandard() {
-    return curMode === "Standard";
-}
-
-/**
- * Assumes that a change in the display mode has occurred, and updates DOM accordingly.
- * 
- * This should only be called from toggleModeVariable.
- */
-function updateDisplayMode() {
-    if (modeIsStandard()) {
-        //Change the enter button back to equals
-        document.querySelector("#op_equals").textContent = "=";
-        
-        //Turn the toggle negative button back to open paren
-        let toggleNegativeBtn = document.querySelector("#op_toggle_negativity");
-        toggleNegativeBtn.id = "misc_openParen"
-        toggleNegativeBtn.textContent = "("
-        toggleNegativeBtn.classList.remove("doubleWidthOperations");
-
-        //Create new closeParen element
-        let closeParen = document.createElement("button");
-        closeParen.classList.add("button");
-        closeParen.id = "misc_closeParen";
-        closeParen.textContent = ")";
-        //This inserts after toggleNegativeButton
-        document.querySelector(".operations").insertBefore(closeParen, toggleNegativeBtn.nextSibling);
-    }
-    else {
-        document.querySelector("#op_equals").textContent = "Enter";        
-        document.querySelector("#misc_openParen").replaceWith(createToggleNegativeButton());
-        document.querySelector("#misc_closeParen").replaceWith();
-    }
-    setCurValDisplay("");
-    clearHistory();
-}
-/** Creates node for a "+/-" button, which is used in RPN mode. */
-function createToggleNegativeButton() {
-    let toggleNegativeBtn = document.createElement("button");
-    toggleNegativeBtn.classList.add("button");
-    toggleNegativeBtn.classList.add("doubleWidthOperations");
-    toggleNegativeBtn.id = "op_toggle_negativity";
-    toggleNegativeBtn.textContent = "+/-"
-
-    return toggleNegativeBtn;
 }
 
 /**
@@ -323,19 +157,6 @@ function toggleNegativityOperation() {
 }
 
 /**
- * Removes some number of RPN-style history entries from the back and front end.
- * @param {number} num - The number of history entries to be removed.
- */
-function removeEntriesFromHistory(num) {
-    inputHistory = inputHistory.slice(0, (num * (-1)));
-    let parent = document.querySelector("#original"); //from .display#history
-    while (num > 0) {
-        parent.removeChild(parent.lastChild);
-        --num;
-    }
-}
-
-/**
  * Toggles the sign of a string representation of a number.
  * 
  * Is there any point to doing this instead of String(-1*(Number(num)))? 
@@ -354,6 +175,96 @@ function isNegative(num) {
     return (num.slice(0,1) == "-")
 }
 
+/*
+===============================================================
+HISTORY DISPLAY FUNCTIONS
+===============================================================
+*/
+
+/**
+ * Builds and displays new a history entry for the most recent input.
+ * 
+ * This function only determines how to build the new entry, and refreshes
+ * the scroll. The actual construction is outsourced.
+ * 
+ * An RPN calculator builds it's equations out of smaller building blocks, 
+ * so there is rarely enough context available to cleanly display past
+ * operations for reference. However, it's stack (which, in this 
+ * implementation, is the same as it's history) is an integral part of
+ * how it functions. This means that the two history displays serve
+ * different needs, and so are implemented differently.* 
+ */
+function updateHistoryDisplay() {
+    if (modeIsStandard()) {
+        createHistoryEntryStandard(inputHistory.at(-1), outputHistory.at(-1));
+    }
+    else {
+        createHistoryEntryRPN(inputHistory.at(-1));
+    }
+    historyDisplay.scrollTop = historyDisplay.scrollHeight;
+}
+
+/**
+ * Builds and displays three divs to hold a Standard mode history entry.
+ * @param {string} newInputEntry - The input value to be displayed.
+ * @param {string} newOutputEntry - The output value to be displayed.
+ */
+function createHistoryEntryStandard(newInputEntry, newOutputEntry) {
+    const originalEntry = createHistoryDiv(newInputEntry, "value");
+    const equalsEntry = createHistoryDiv("=");
+    const resultEntry = createHistoryDiv(newOutputEntry, "value");
+
+    document.querySelector("#original").appendChild(originalEntry);
+    document.querySelector("#equals").appendChild(equalsEntry);
+    document.querySelector("#result").appendChild(resultEntry);
+}
+
+/**
+ * Builds and displays one div to hold an RPN mode history entry.
+ * @param {string} newEntry - The number to be displayed.
+ */
+function createHistoryEntryRPN(newEntry) {
+    const entry = createHistoryDiv(newEntry, "historyEntry", "value");
+    document.querySelector("#original").appendChild(entry);
+}
+
+/**
+ * Creates a div with the provided content as text, and zero or more classes.
+ * @param {string} content - The text content the div will display.
+ * @param  {...any} classes - Zero or more classes to be added to the div.
+ * @returns {node} A new div with the inputted content and classes. 
+ */
+function createHistoryDiv(content, ...classes) {
+    const entry = document.createElement("div");
+    entry.classList.add("historyEntry", ...classes);
+    entry.textContent = content;
+    addHistoryEntryEventListener(entry);
+    return entry;
+}
+
+/**
+ * Adds an event listener to the inputted node allowing for history recall.
+ * @param {node} node
+ */
+function addHistoryEntryEventListener(node) {
+    node.addEventListener("click", (event) => {
+        setCurValDisplay(event.target.textContent);
+    });
+}
+
+/**
+ * Removes some number of RPN-style history entries from the back and front end.
+ * @param {number} num - The number of history entries to be removed.
+ */
+function removeEntriesFromHistory(num) {
+    inputHistory = inputHistory.slice(0, (num * (-1)));
+    let parent = document.querySelector("#original"); //from .display#history
+    while (num > 0) {
+        parent.removeChild(parent.lastChild);
+        --num;
+    }
+}
+
 function clearHistory() {
     clearHistoryDisplay();
     clearLogicalHistory();    
@@ -369,4 +280,113 @@ function clearHistoryDisplay() {
 function clearLogicalHistory() {
     inputHistory = [];
     outputHistory = [];
+}
+
+/*
+===============================================================
+DISPLAY MODE FUNCTIONS
+===============================================================
+*/
+
+/** Switches the current display mode, then calls helper function to rebuild display. */
+function toggleModeVariable() {
+    if (curMode === "Standard") {
+        curMode = "RPN";
+    }
+    else if (curMode === "RPN") {
+        curMode = "Standard";
+    }
+    updateDisplayMode();
+}
+
+function modeIsStandard() {
+    return curMode === "Standard";
+}
+
+/**
+ * Assumes that a change in the display mode has occurred, and updates DOM accordingly.
+ * 
+ * This should only be called from toggleModeVariable.
+ */
+function updateDisplayMode() {
+    if (modeIsStandard()) {
+        //Change the enter button back to equals
+        document.querySelector("#op_equals").textContent = "=";
+        
+        //Turn the toggle negative button back to open paren
+        let toggleNegativeBtn = document.querySelector("#op_toggle_negativity");
+        toggleNegativeBtn.id = "misc_openParen"
+        toggleNegativeBtn.textContent = "("
+        toggleNegativeBtn.classList.remove("doubleWidthOperations");
+
+        //Create new closeParen element
+        let closeParen = document.createElement("button");
+        closeParen.classList.add("button");
+        closeParen.id = "misc_closeParen";
+        closeParen.textContent = ")";
+        //This inserts after toggleNegativeButton
+        document.querySelector(".operations").insertBefore(closeParen, toggleNegativeBtn.nextSibling);
+    }
+    else {
+        document.querySelector("#op_equals").textContent = "Enter";        
+        document.querySelector("#misc_openParen").replaceWith(createToggleNegativeButton());
+        document.querySelector("#misc_closeParen").replaceWith();
+    }
+    setCurValDisplay("");
+    clearHistory();
+}
+
+/** Creates node for a "+/-" button, which is used in RPN mode. */
+function createToggleNegativeButton() {
+    let toggleNegativeBtn = document.createElement("button");
+    toggleNegativeBtn.classList.add("button");
+    toggleNegativeBtn.classList.add("doubleWidthOperations");
+    toggleNegativeBtn.id = "op_toggle_negativity";
+    toggleNegativeBtn.textContent = "+/-"
+
+    return toggleNegativeBtn;
+}
+
+/*
+===============================================================
+HELPER FUNCTIONS
+===============================================================
+Several helper methods to enhance clarity or reduce manual interfacing with 
+constants or string variables.
+*/
+
+function appendChar(char) {
+    curValDisplay.textContent = curValDisplay.textContent + char;
+}
+
+function deleteChar() {
+    let t = curValDisplay.textContent;
+    curValDisplay.textContent = t.slice(0, -1);
+}
+
+function isValidKey(key) {
+    return (numberKeys.includes(key) 
+        || symbolKeys.includes(key) 
+        || binaryOperations.includes(key) 
+        || unaryOperations.includes(key));
+}
+
+function setCurValDisplay(val) {
+    curValDisplay.textContent = val;
+}
+
+function getCurVal() {
+    return curValDisplay.textContent;
+}
+
+function curValDisplayIsEmpty() {
+    return (curValDisplay.textContent.length == 0);
+}
+
+function isBinaryOp(c) {
+    return binaryOperations.includes(c);
+}
+
+function isUnaryOp(c) {
+    return unaryOperations.includes(c);
 }
