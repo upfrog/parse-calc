@@ -1,5 +1,7 @@
-const numberKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "."];
+const numberKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "e"];
 const symbolKeys = ["*", "/", "+", "-", "^", "(", ")"];
+const binaryOperations = ["*", "/", "+", "-", "^"];
+const unaryOperations = ["!", "sqrt", "sin", "cos", "tan", "ln",]
 const curValDisplay = document.querySelector("#currentValue");
 const historyDisplay = document.querySelector("#history");
 let inputHistory = [];
@@ -165,6 +167,14 @@ function setCurValDisplay(val) {
     curValDisplay.textContent = val;
 }
 
+function getCurVal() {
+    return curValDisplay.textContent;
+}
+
+function curValDisplayIsEmpty() {
+    return (curValDisplay.textContent.length == 0);
+}
+
 
 /**
  * These functions are a bit unnecesary, but I want to spend as little time
@@ -189,27 +199,36 @@ function modeIsStandard() {
     return curMode === "Standard";
 }
 
+function isBinaryOp(c) {
+    return binaryOperations.includes(c);
+}
+
+function isUnaryOp(c) {
+    return unaryOperations.includes(c);
+}
+
 //Assumes that the DOM needs to be changed to match the current curMode
 function updateDisplayMode() {
     if (modeIsStandard()) {
         document.querySelector("#op_equals").textContent = "=";
         
+        //Turn the toggle negative button back to open paren
         let toggleNegativeBtn = document.querySelector("#op_toggle_negativity");
         toggleNegativeBtn.id = "misc_openParen"
         toggleNegativeBtn.textContent = "("
         toggleNegativeBtn.classList.remove("doubleWidthOperations");
 
+        //Create new closeParen element
         let closeParen = document.createElement("button");
         closeParen.classList.add("button");
         closeParen.id = "misc_closeParen";
         closeParen.textContent = ")";
+        //This is inserting after toggleNegativeButton
         document.querySelector(".operations").insertBefore(closeParen, toggleNegativeBtn.nextSibling);
     }
     else {
-        document.querySelector("#op_equals").textContent = "Enter";
-        let openParen = document.querySelector("#misc_openParen");
-        
-        openParen.replaceWith(createToggleNegativeButton());
+        document.querySelector("#op_equals").textContent = "Enter";        
+        document.querySelector("#misc_openParen").replaceWith(createToggleNegativeButton());
         document.querySelector("#misc_closeParen").replaceWith();
     }
     setCurValDisplay("");
@@ -226,58 +245,39 @@ function createToggleNegativeButton() {
     return toggleNegativeBtn;
 }
 
-
+/**
+ * RPN input is either a number, in which case it gets pushed to the stack, or an operation, in
+ * which case either something needs to be taken off the stack, the value in curValDisplay needs
+ * to be used, or both.
+ * 
+ * @param {*} c 
+ * @returns 
+ */
 function processInputRPN(c) {
     if (numberKeys.includes(c)) {
         appendChar(c);
     }
     else {
-        let result = "";
-        let historyParent = document.querySelector("#original")
-        //Check if it's a binary operation
-        if (["+", "-", "*", "/", "^"].includes(c)) {
-            //If there is a number currently being entered, assume it is an operand
-            if (curValDisplay.textContent == "") {
-                result = evaluateInput(inputHistory.at(-2), inputHistory.at(-1), c);
-            
-                historyParent.removeChild(historyParent.lastChild);
-                historyParent.removeChild(historyParent.lastChild);
-                inputHistory = inputHistory.slice(0, -2);
-            }
-            else {
-                result = evaluateInput(inputHistory.at(-1), curValDisplay.textContent, c);
-            
-                historyParent.removeChild(historyParent.lastChild);
-                inputHistory = inputHistory.slice(0, -1);
-            }
-            
-            curValDisplay.textContent = "";
-            inputHistory.push(result);
-            updateHistoryDisplay();
-        }
-        else if (c == "+/-") {            
-            if (curValDisplay.textContent.length > 0) {
-                alert("changing cur val")
-                curValDisplay.textContent = toggleNegativity(curValDisplay.textContent);
-            }
-            else if (inputHistory.length > 0) {
-                alert("changing history")
-                inputHistory[inputHistory.length-1] = toggleNegativity(inputHistory[inputHistory.length-1]);
-                historyParent.lastChild.textContent = toggleNegativity(historyParent.lastChild.textContent);
-            }
-            else {
-                alert("in else")
-                return; //does nothing. This will run if the user has not entered anythign at all
-            }
-
-        }
+        if (c == "+/-") { 
+            //Would this be better handled with a listener directly attached to the button?
+            toggleNegativityOperation();
+        }        
         else {
-            if (curValDisplay.textContent == "") {
+            let result = "";
+            //If an operator is binary, we need 2 operands. If it is unary, we only need one.
+            //If there is a value in the display, that will be one of our operands. Otherwise,
+            //we will get all operands from the stack.
+            if (isBinaryOp(c) && curValDisplayIsEmpty()) {
+                result = evaluateInput(inputHistory.at(-2), inputHistory.at(-1), c);
+                removeEntriesFromHistory(2);
+            }
+            else if (isBinaryOp(c) && !curValDisplayIsEmpty()) {
+                result = evaluateInput(inputHistory.at(-1), curValDisplay.textContent, c);
+                removeEntriesFromHistory(1);
+            }
+            else if (!isBinaryOp(c) && curValDisplayIsEmpty()) {
                 result = evaluateInput(inputHistory.at(-1), c);
-            
-                historyParent.removeChild(historyParent.lastChild);
-                inputHistory = inputHistory.slice(0, -1);
-                
+                removeEntriesFromHistory(1);
             }
             else {
                 result = evaluateInput(curValDisplay.textContent, c);
@@ -285,9 +285,32 @@ function processInputRPN(c) {
             curValDisplay.textContent = "";
             inputHistory.push(result);
             updateHistoryDisplay();
-            
         }
+    }
+}
 
+
+function toggleNegativityOperation() {
+    if (!(curValDisplayIsEmpty())) {
+        setCurValDisplay(toggleNegativity(getCurVal()));
+    }
+    else if (inputHistory.length > 0) {
+        let k = inputHistory.length - 1;
+        inputHistory[k] = toggleNegativity(inputHistory[k]);
+        historyParent.lastChild.textContent = toggleNegativity(historyParent.lastChild.textContent);
+    }
+    else {
+        return; //does nothing. This will run if the user has not entered anything at all
+    }
+}
+
+//This only works for RPN
+function removeEntriesFromHistory(num) {
+    inputHistory = inputHistory.slice(0, (num * (-1)));
+    let parent = document.querySelector("#original"); //from .display#history
+    while (num > 0) {
+        parent.removeChild(parent.lastChild);
+        --num;
     }
 }
 
@@ -308,10 +331,6 @@ function isNegative(num) {
     return (num.slice(0,1) == "-")
 }
 
-
-
-
-
 function clearHistory() {
     clearHistoryDisplay();
     clearLogicalHistory();    
@@ -328,6 +347,7 @@ function clearLogicalHistory() {
     inputHistory = [];
     outputHistory = [];
 }
+
 
 
 /*

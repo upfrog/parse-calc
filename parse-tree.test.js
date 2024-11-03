@@ -32,8 +32,11 @@ describe("Test binary operators", () => {
     test("Test expression with large numbers", () => {
         expect(calc("1000000*1000")).toBe(1000000000);
     });
-});
 
+    test("Test that e can be added", () => {
+        expect(calc("e+2")).toBe(Number((Math.E + 2).toFixed(8)));
+    })
+});
 
 describe("Test unary prefix functions", () => {
     test("Test square root", () => {
@@ -51,8 +54,11 @@ describe("Test unary prefix functions", () => {
     test("Test tan", () => {
         expect(calc("tan(9)")).toBe(Number(Math.tan(9).toFixed(8)));
     })
-});
 
+    test("Test that ln(e) is 1", () => {
+        expect(calc("ln(e)")).toBe(1);
+    })
+});
 
 describe("Test unary postfix functions", () => {
     test("Test factorial", () => {
@@ -75,11 +81,6 @@ describe("Test unary postfix functions", () => {
         expect(calc("3!+3^2")).toBe(15);
     })
 });
-
-
-
-
-
 
 describe("Edge cases", () => {
     test("Exponentiation with base zero returns zero", () => {
@@ -232,8 +233,6 @@ describe("Test binary operators in RPN", () => {
 
 });
 
-
-
 describe("Test unary operators in RPN", () => {
     test("Test square root", () => {
         expect(calc("9", "sqrt")).toBe(3);
@@ -253,6 +252,10 @@ describe("Test unary operators in RPN", () => {
 
     test("Test factorial", () => {
         expect(calc("3", "!")).toBe(6);
+    })
+
+    test("Test natural log", () => {
+        expect(calc("e", "ln")).toBe(1);
     })
 });
 

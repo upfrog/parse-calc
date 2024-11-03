@@ -60,6 +60,9 @@ function evaluateInput(val1, val2, op) {
     }
     //If there are more arguments, then it was parsed by RPN mode
     else {
+        if (val1 === "e") {
+            val1 = Math.E;
+        }
         val1 = parseFloat(val1); //Guaranteed to be at least one operand
         try {
             if (arguments.length == 2) {
@@ -69,6 +72,9 @@ function evaluateInput(val1, val2, op) {
             }
             else if (arguments.length == 3) {
                 //binary operator
+                if (val2 === "e") {
+                    val2 = Math.E;
+                }
                 val2 = parseFloat(val2);
                 return roundResult(evalBinaryTerm(val1, val2, op));
     
