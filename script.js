@@ -1,7 +1,7 @@
 const numberKeys = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", ".", "e"];
 const symbolKeys = ["*", "/", "+", "-", "^", "(", ")"];
 const binaryOperations = ["*", "/", "+", "-", "^"];
-const unaryOperations = ["!", "sqrt", "sin", "cos", "tan", "ln",]
+const unaryOperations = ["!", "sqrt", "sin", "cos", "tan", "ln", "+/-"]
 const curValDisplay = document.querySelector("#currentValue");
 const historyDisplay = document.querySelector("#history");
 let inputHistory = [];
@@ -11,64 +11,47 @@ let curMode = "Standard"
 let calc = document.querySelector(".controls");
 
 document.addEventListener("keydown", (event) => {
-    handleKeyPress(event);
+    handleInput(event)
 })
-
 
 calc.addEventListener("click", (event) => {
-    handleButtonClick(event);
+    handleInput(event)
 })
 
-document.querySelector("#switch").addEventListener("click", (event) => {
+document.querySelector("#switch").addEventListener("click", () => {
     toggleModeVariable();
     updateDisplayMode();
 })
 
-//I'd kind of like to condense this and handleKeyPress(), but it's fine as is.
-function handleButtonClick(event) {
-
-    let c = event.target.textContent;
-    if (!(event.target.classList.contains("button"))) {
-        return;
-    }
-    else if (c == "=" || c == "Enter") {
+/**Takes input in the form of button click or a keyboard key, and processes it.
+ * 
+ * @param {event} Some type of input event 
+ */
+function handleInput(event) {
+    event.preventDefault();
+    let val = (event.key == undefined) ?  event.target.textContent : event.key;
+    
+    if (val == "=" || val == "Enter") {
         processEnterKey();
     }
-    else if (c == "C") {
-        curValDisplay.textContent = "";
+    else if (val == "C") {
+        setCurValDisplay("");
     }
-    else if (c=="del") {
+    else if (val == "del" || val == "Backspace" || val == "Delete") {
         deleteChar();
     }
-    else if (c=="CL") {
+    else if (val == "CL") {
         clearHistory();
-        curValDisplay.textContent = "";
     }
-    else {
+    else if (val == "+/-") { 
+        toggleNegativityOperation();
+    }  
+    else if (isValidKey(val)) {
         if (modeIsStandard()) {
-            appendChar(c);
+            appendChar(val);
         }
         else {
-            processInputRPN(c);
-        }
-    }
-
-}
-
-function handleKeyPress(event) {
-    event.preventDefault(); // Prevents default form submission or other browser actions
-    if (event.key == "Backspace" || event.key == "Delete") {
-        deleteChar();
-    }
-    else if (event.key == "Enter") {
-        processEnterKey();
-    }
-    else if (isValidKey(event.key)) {
-        if (modeIsStandard()) {
-            appendChar(event.key);
-        }
-        else {
-            processInputRPN(event.key);
+            processInputRPN(val);
         }
     }
 }
@@ -151,7 +134,7 @@ function deleteChar() {
 }
 
 function isValidKey(key) {
-    return numberKeys.includes(key) || symbolKeys.includes(key);
+    return numberKeys.includes(key) || symbolKeys.includes(key) || binaryOperations.includes(key) || unaryOperations.includes(key);
 }
 
 function setCurValDisplay(val) {
@@ -249,34 +232,28 @@ function processInputRPN(c) {
         appendChar(c);
     }
     else {
-        if (c == "+/-") { 
-            //Would this be better handled with a listener directly attached to the button?
-            toggleNegativityOperation();
-        }        
-        else {
-            let result = "";
-            //If an operator is binary, we need 2 operands. If it is unary, we only need one.
-            //If there is a value in the display, that will be one of our operands. Otherwise,
-            //we will get all operands from the stack.
-            if (isBinaryOp(c) && curValDisplayIsEmpty()) {
-                result = evaluateInput(inputHistory.at(-2), inputHistory.at(-1), c);
-                removeEntriesFromHistory(2);
-            }
-            else if (isBinaryOp(c) && !curValDisplayIsEmpty()) {
-                result = evaluateInput(inputHistory.at(-1), curValDisplay.textContent, c);
-                removeEntriesFromHistory(1);
-            }
-            else if (!isBinaryOp(c) && curValDisplayIsEmpty()) {
-                result = evaluateInput(inputHistory.at(-1), c);
-                removeEntriesFromHistory(1);
-            }
-            else {
-                result = evaluateInput(curValDisplay.textContent, c);
-            }
-            curValDisplay.textContent = "";
-            inputHistory.push(result);
-            updateHistoryDisplay();
+        let result = "";
+        //If an operator is binary, we need 2 operands. If it is unary, we only need one.
+        //If there is a value in the display, that will be one of our operands. Otherwise,
+        //we will get all operands from the stack.
+        if (isBinaryOp(c) && curValDisplayIsEmpty()) {
+            result = evaluateInput(inputHistory.at(-2), inputHistory.at(-1), c);
+            removeEntriesFromHistory(2);
         }
+        else if (isBinaryOp(c) && !curValDisplayIsEmpty()) {
+            result = evaluateInput(inputHistory.at(-1), curValDisplay.textContent, c);
+            removeEntriesFromHistory(1);
+        }
+        else if (!isBinaryOp(c) && curValDisplayIsEmpty()) {
+            result = evaluateInput(inputHistory.at(-1), c);
+            removeEntriesFromHistory(1);
+        }
+        else {
+            result = evaluateInput(curValDisplay.textContent, c);
+        }
+        curValDisplay.textContent = "";
+        inputHistory.push(String(result));
+        updateHistoryDisplay();
     }
 }
 
@@ -287,6 +264,7 @@ function toggleNegativityOperation() {
     }
     else if (inputHistory.length > 0) {
         let k = inputHistory.length - 1;
+        let historyParent = document.querySelector("#original");
         inputHistory[k] = toggleNegativity(inputHistory[k]);
         historyParent.lastChild.textContent = toggleNegativity(historyParent.lastChild.textContent);
     }

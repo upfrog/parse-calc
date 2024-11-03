@@ -35,7 +35,7 @@ function main() {
  * @param {String} val2     The second of two operands, or a unary operator
  *                          to be applied to val1. Optional.
  * @param {String} op       A binary operator to be applied to val1 and val2. Optional.
- * @returns The result of the entered mathematical expression.
+ * @returns The result of the entered mathematical expression as a Number.
  */
 function evaluateInput(val1, val2, op) {
     //If there is 1 argument, it's a string containing an expression
