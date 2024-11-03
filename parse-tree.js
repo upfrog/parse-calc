@@ -1,5 +1,6 @@
 //Commented out because I'll be using it later for adding new features.
 const DECIMAL_PLACES = 8;
+const unaryPrefixOperations = ["sqrt", "sin", "cos", "tan", "ln"];
 
 /**
  * TODO:
@@ -333,30 +334,10 @@ class Parser {
 
     //This seriously needs condensing!
     parsePrefixUnary() {
-        if (this.curToken == "sqrt") {
+        while (unaryPrefixOperations.includes(this.curToken)) {
             let operation = this.curToken;
             this.advanceToken();
-            return new UniNode(operation, this.parseTerm());
-        }
-        else if (this.curToken == "sin") {
-            let operation = this.curToken;
-            this.advanceToken();
-            return new UniNode(operation, this.parseTerm());
-        }
-        else if (this.curToken == "cos") {
-            let operation = this.curToken;
-            this.advanceToken();
-            return new UniNode(operation, this.parseTerm());
-        }
-        else if (this.curToken == "tan") {
-            let operation = this.curToken;
-            this.advanceToken();
-            return new UniNode(operation, this.parseTerm());
-        }
-        else if (this.curToken == "ln") {
-            let operation = this.curToken;
-            this.advanceToken();
-            return new UniNode(operation, this.parseTerm());
+            return new UniNode(operation, this.parsePrefixUnary());
         }
         return this.parseTerm();
     }
