@@ -24,15 +24,6 @@ document.querySelector("#switch").addEventListener("click", (event) => {
     updateDisplayMode();
 })
 
-
-historyDisplay.addEventListener("click", (event) => {
-    console.log(event.target.children);
-    if (event.target.classList.includes("historyEntry")) {
-        alert(event.target.textContent);
-    }    
-})
-
-
 //I'd kind of like to condense this and handleKeyPress(), but it's fine as is.
 function handleButtonClick(event) {
 
