@@ -20,7 +20,6 @@ calc.addEventListener("click", (event) => {
 
 document.querySelector("#switch").addEventListener("click", () => {
     toggleModeVariable();
-    updateDisplayMode();
 })
 
 /**
@@ -176,23 +175,9 @@ function curValDisplayIsEmpty() {
 }
 
 
-/**
- * These functions are a bit unnecesary, but I want to spend as little time
- * as possible manually working with strings.
- * 
- */
-function toggleModeVariable() {
-    if (curMode === "Standard") {
-        curMode = "RPN";
-    }
-    else if (curMode === "RPN") {
-        curMode = "Standard";
-    }
-}
 
-function modeIsStandard() {
-    return curMode === "Standard";
-}
+
+
 
 function isBinaryOp(c) {
     return binaryOperations.includes(c);
@@ -202,9 +187,34 @@ function isUnaryOp(c) {
     return unaryOperations.includes(c);
 }
 
-//Assumes that the DOM needs to be changed to match the current curMode
+
+/*
+DISPLAY MODE FUNCTIONS
+*/
+
+/** Switches the current display mode, then calls helper function to rebuild display. */
+function toggleModeVariable() {
+    if (curMode === "Standard") {
+        curMode = "RPN";
+    }
+    else if (curMode === "RPN") {
+        curMode = "Standard";
+    }
+    updateDisplayMode();
+}
+
+function modeIsStandard() {
+    return curMode === "Standard";
+}
+
+/**
+ * Assumes that a change in the display mode has occurred, and updates DOM accordingly.
+ * 
+ * This should only be called from toggleModeVariable.
+ */
 function updateDisplayMode() {
     if (modeIsStandard()) {
+        //Change the enter button back to equals
         document.querySelector("#op_equals").textContent = "=";
         
         //Turn the toggle negative button back to open paren
@@ -218,7 +228,7 @@ function updateDisplayMode() {
         closeParen.classList.add("button");
         closeParen.id = "misc_closeParen";
         closeParen.textContent = ")";
-        //This is inserting after toggleNegativeButton
+        //This inserts after toggleNegativeButton
         document.querySelector(".operations").insertBefore(closeParen, toggleNegativeBtn.nextSibling);
     }
     else {
@@ -239,6 +249,8 @@ function createToggleNegativeButton() {
 
     return toggleNegativeBtn;
 }
+
+
 
 /**
  * RPN input is either a number, in which case it gets pushed to the stack, or an operation, in
