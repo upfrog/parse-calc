@@ -324,55 +324,78 @@ RPN slider
 */
 
 
+
+/* Wrapper container */
 .settings {
-    background-color: red;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: 100%;
+    gap: 10px;
+    font-family:'Courier New', Courier, monospace; 
+    color: white;
+    font-size: larger;
+    font-weight: 400;
+    margin-bottom: 3px;
 }
 
-input[type=checkbox], label {
-    margin-top: 100px;
-    margin-left: 20px;
+
+
+
+
+/* Hidden checkbox */
+input[type=checkbox] {
+    height: 0;
+    width: 0;
+    visibility: hidden;
+    position: absolute; /* Keeps it out of flow */
 }
 
-
-input[type=checkbox]{
-	height: 0;
-	width: 0;
-	visibility: hidden;
-}
-
+/* Switch label */
 label {
-	cursor: pointer;
-	text-indent: -9999px;
-	width: 80px;
-	height: 40px;
-	background: grey;
-	display: block;
-	border-radius: 100px;
-	position: relative;
+    cursor: pointer;
+    text-indent: -9999px;
+    width: 80px;
+    height: 40px;
+    background: grey;
+    display: block;
+    border-radius: 100px;
+    position: relative;
 }
 
+/* Toggle button (switch knob) */
 label:after {
     content: '';
-
-	position: absolute;
-	top: 5px;
-	left: 5px;
-	width: 30px;
-	height: 30px;
-	background: #fff;
-	border-radius: 90px;
-	transition: 0.3s;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    width: 30px;
+    height: 30px;
+    background: #fff;
+    border-radius: 90px;
+    transition: 0.3s;
 }
 
+/* Checked state */
 input:checked + label {
-	background: #02dec8;
+    background: #02dec8;
 }
 
 input:checked + label:after {
-	left: calc(100% - 5px);
-	transform: translateX(-100%);
+    left: calc(100% - 5px);
+    transform: translateX(-100%);
 }
 
 label:active:after {
-	width: 50px;
+    width: 50px;
 }
+
+
+
+
+
+
+
+
+
