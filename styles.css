@@ -1,13 +1,7 @@
 body {
-    
     background-color: #363636;
-    /*
-    background-color: #e8e3d3;
-    */
-
     display: flex;
     flex-direction: column;
-    
 }
 
 #content {
@@ -27,9 +21,7 @@ body {
     flex-grow:1;
 }
 
-
 .calculator {
-
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -38,26 +30,18 @@ body {
     border: 30px solid #242626;
     border-radius: 23px;
     box-sizing: border-box;
-    /*
-    background-color: 363636;
-    */
-}
 
+}
 
 .calcBorder {
     border: 2px solid #02dec8;
     border-radius: 25px ;
     box-shadow: 0px 0px 20px 0px #02d4bf;
-
-
     margin-top:100px;
 }
 
-
 .display {
     font-family:'Courier New', Courier, monospace;
-
-    
 
     border: solid 10px;
     border-color: #039687;
@@ -65,38 +49,20 @@ body {
     background-color: #04b3a1;
     box-shadow: inset 0px 0px 20px 20px #02d4bf;
 
-    
-    
-
-
-    /*border-radius: 30px 30px 0px 0px;*/
-
     width: 600px;
     height: 200px;
     padding: 20px;
     font-size: 20px;
     margin: 2px;
-    
-
-    /*
-    display: flex;
-    align-self: center;
-    */
 
     position: relative;
 
-
     display: flex;
     flex-direction: column;
-
 }
 
-
 .display #history {
-    
     display: flex;
-    
-    
     
     position: absolute;
     bottom: 50;
@@ -105,51 +71,36 @@ body {
 
     width:inherit;
 
-
     overflow-x: auto;
-    
 }
 
-.value{
+/* clickable history entries */
+.value {
     transition: text-shadow 0.3s ease;
 }
 
 .value:hover{
-    /*
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    
-    cursor: pointer;
-    border: 2px solid #0ff; 
-    filter: drop-shadow(5px 5px 3rem red); 
-    box-shadow: 0px 0px 20px 10px red; */
+    /* duplicated for more intense glow */
     text-shadow: 0 0 2px yellow, 0 0 4px yellow, 0 0 6px yellow,
-                0 0 2px yellow, 0 0 4px yellow, 0 0 6px yellow;
-
-    /*animation: neonOutline 2s infinite linear;*/
+                0 0 2px yellow, 0 0 4px yellow, 0 0 6px yellow; 
 }
 
-
-.display #original {
+.display #history #original {
     width: 50px;
     flex-grow: 3;
-    
 }
 
-.display #result {
+.display #history #result {
     flex-grow: 2;
     width: 50px;
     text-align: right;
 }
 
-.display #equals {
+.display #history #equals {
     width: 10px;
     flex-grow: .5;
     text-align: center;
 }
-
 
 .display #currentValue {
     color: red;
@@ -157,57 +108,31 @@ body {
     bottom: 0;
     min-height: 30px;
     width:inherit;
-
 }
 
 .controls {
     display: flex;
-    align-self: flex-start;
+    align-self: center;
     margin: 5px;
     gap: 5px;
     pointer-events: none;
-
 }
 
-
-
-.numbers {
+.controls .operations,
+.controls .numbers {
     display: flex;
-    flex-wrap: wrap;
-    max-width: 180px;
-    gap: 5px;
-    pointer-events: auto;
-
-
-}
-
-
-.operations {
-    display: flex;
-    flex-direction: row;
     flex-wrap: wrap;
     max-width: 160px;
     gap: 5px;
-
     pointer-events: auto;
-
 }
-/*
-.operations #op_equals, #op_clear, #op_clear_history {
-    width: 105px;
-    border-radius: 35px;
-    
-}
-*/
 
-
-.doubleWidthOperations {
+.controls .doubleWidthOperations {
     width: 105px;
     border-radius: 35px;
 }
 
-
-.operations_group_2 {
+.controls .operations_group_2 {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -215,47 +140,25 @@ body {
     gap: 5px;
 }
 
-button{
-    
+.controls button{
     font-size: 20px;
     font-weight:400;
     
     color: #02d4bf;
-
-    border-radius: 20px;
     width: 50px;
     height: 50px;
     border-radius: 50%;
     background-color: #053680;
     border-width: 0px;
-    pointer-events: auto;
-    
-
-    /*
-    background-color: #333; 
-    color: #0ff;
-    border: 2px solid transparent;
-    padding: 12px 18px;
-    border-radius: 4px;
-    font-size: 20px;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-    */
-
-    
-    
-    
+    pointer-events: auto;   
 }
 
-
-
-
-button:active { 
+.controls button:active { 
     transform: scale(0.90); 
     box-shadow: 0px 0px 20px 10px #02d4bf;
 }
 
-button:hover {
+.controls button:hover {
     content: "";
 
     top: -2px;
@@ -268,62 +171,7 @@ button:hover {
     animation: neonOutline 2s infinite linear;
 }
 
-
-/*
-.controls button {
-    padding: 10px 20px;
-    min-width: 50px;
-    min-height:50px;
-    font-size: 16px;
-    color: #fff;
-    background-color: #1c1c1c;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    transition: color 0.2s ease;
-}
-
-button:hover::before {
-    content: "";
-
-    position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
-    border-radius: 5px;
-    border: 2px solid #0ff; 
-    filter: drop-shadow(0 0 6px #0ff); 
-    animation: neonOutline 2s infinite linear;
-}
-
-@keyframes neonOutline {
-
-    0% { transform: translate(0, 0); }
-    20% { transform: translate(2px, -2px); }
-    40% { transform: translate(-2px, -2px); }
-    60% { transform: translate(-2px, 2px); }
-    80% { transform: translate(2px, 2px); }
-    100% { transform: translate(0, 0); }
-    
-    
-    20% { transform: translate(2px, -2px); }
-    40% { transform: translate(-2px, 2px); }
-    60% { transform: translate(-2px, -2px);}
-    80% { transform: translate(2px, 2px); }
-    100% { transform: translate(0, 0); }
-    
-}
-*/
-
-
-/*
-RPN slider
-*/
-
-
+/* RPN slider */
 
 /* Wrapper container */
 .settings {
@@ -339,10 +187,6 @@ RPN slider
     font-weight: 400;
     margin-bottom: 3px;
 }
-
-
-
-
 
 /* Hidden checkbox */
 input[type=checkbox] {
@@ -390,12 +234,3 @@ input:checked + label:after {
 label:active:after {
     width: 50px;
 }
-
-
-
-
-
-
-
-
-
