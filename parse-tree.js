@@ -1,7 +1,6 @@
 const DECIMAL_PLACES = 8;
 const prefixUnaryOperations = ["sqrt", "sin", "cos", "tan", "ln"];
 
-
 /** 
  * Takes some set of calculator inputs, evaluates them, and returns the result.
  * 
@@ -58,7 +57,6 @@ function evaluateInput(val1, val2, op) {
 }
 
 //RPN FUNCTIONS
-
 function evalBinaryTerm(left, right, op) {
     switch (op) {
         case "+":
@@ -77,7 +75,6 @@ function evalBinaryTerm(left, right, op) {
     }
     return NaN;
 }
-
 
 function evalUnaryTerm(val, op) {
     switch (op) {
@@ -98,11 +95,6 @@ function evalUnaryTerm(val, op) {
 
 }
 
-
-
-/**
- * 
- */
 function tokenizeInput(input) {
 
     let inArr = [...input];
@@ -132,11 +124,7 @@ function tokenizeInput(input) {
             tokens.push(inArr[i]);
             ++i;
         }
-        //I think this creates a vulnerability for just putting in "s", then ending input?
-        //Also, these are messy, and should be condensed.
 
-
-        //This seriously needs condensing!
         else if ((inArr.slice(i, i+4)).join("") == "sqrt") {
             tokens.push("sqrt");
             i += 4;
@@ -161,6 +149,7 @@ function tokenizeInput(input) {
             tokens.push("e");
             ++i;
         }
+            
         else {
             throw new Error("Invalid input");
         }
@@ -203,7 +192,7 @@ class Parser {
     }
     
     /**
-     * This is more to help me get this clear in my head.
+     * This is mostly to help me get this clear in my head.
      * 
      * These functions work by pushing precedence down.
      * 
@@ -230,9 +219,7 @@ class Parser {
      * that parsing has to complete before the current level can be finished. If, in the
      * process of parsing to generate a right node, the program finds something of lower
      * precedence, it will not parse it. Instead it will return up the call stack (which
-     * is down the chain of precedence) until it reaches the appropriate function.
-     * 
-     * 
+     * is down the chain of precedence) until it reaches the appropriate function.* 
      */
     parseAddSub() {
         let node = this.parseMultDiv();
@@ -256,7 +243,7 @@ class Parser {
 
     parseExp() {
         let node = this.parsePrefixUnary();
-        while (this.curToken == "^" || this.curToken == "sqrt") {
+        while (this.curToken == "^") {
             if (this.curToken == "^") {
                 let operation = this.curToken;
                 this.advanceToken();
