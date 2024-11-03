@@ -71,7 +71,7 @@ function processEnterOrEquals() {
         outputHistory.push(result);
         setCurValDisplay(result);
     }
-    else if (modeIsRPN()) {
+    else {
         setCurValDisplay("");
     }
     updateHistoryDisplay();
@@ -149,8 +149,6 @@ function addHistoryEntryEventListener(node) {
     });
 }
 
-
-
 //Expects a string, usually a single character
 function appendChar(char) {
     curValDisplay.textContent = curValDisplay.textContent + char;
@@ -191,11 +189,6 @@ function toggleModeVariable() {
         curMode = "Standard";
     }
 }
-
-function modeIsRPN() {
-    return curMode === "RPN";
-}
-
 
 function modeIsStandard() {
     return curMode === "Standard";
