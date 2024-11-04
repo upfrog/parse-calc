@@ -1,4 +1,5 @@
 const DECIMAL_PLACES = 8;
+const singleCharOpps = ["+","-","*","^","/","!"];
 const prefixUnaryOperations = ["sqrt", "sin", "cos", "tan", "ln"];
 const alphabeticalSymbols = ["sqrt", "sin", "cos", "tan", "ln", "e"]; //used in hibernated code.
 
@@ -96,10 +97,8 @@ function evalUnaryTerm(val, op) {
 }
 
 function tokenizeInput(input) {
-
     let inArr = [...input];
     let tokens = [];
-
     let i = 0;
 
     while (i < inArr.length) {
@@ -138,7 +137,7 @@ function tokenizeInput(input) {
                     i = i + j;
                     j = 7; //Sentry value greater than 4
                 }
-                j++;
+                ++j;
             }
             if (j != 8) {
                 throw new Error("Invalid input");
@@ -185,10 +184,14 @@ function getNumEnd(input, i) {
 }
 
 function isSingleCharOpp(elem) {
-    const singleCharOpps = ["+","-","*","^","/","!"];
     return singleCharOpps.includes(elem);
 }
-
+/**
+ * The Parser object wraps an array of tokens, and a position within that array.
+ * 
+ * It is mostly a convenient way to bundle some data, which is then turned into a tree
+ * of Node objects.
+ */
 class Parser {
     constructor(tokens) {
         this.tokens = tokens;
@@ -272,7 +275,7 @@ class Parser {
         }
         return node;
     }
-    
+
     parsePrefixUnary() {
         while (prefixUnaryOperations.includes(this.curToken)) {
             let operation = this.curToken;
