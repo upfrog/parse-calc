@@ -24,10 +24,10 @@ TODO:
 - [X] Build starter GUI
 - [ ] Deploy
 - [X] More rigorous input validation
-- [ ] Add new features!
+- [X] Add new features!
    - [X] Record history
-   - [ ] New operators
-        - [ ] Sqrt
+   - [X] New operators
+        - [X] Sqrt
             - [ ] May want a custom way to display it - "sqrt()" is a bit lame
         - [X]  Factorial
         - [X]  Natural log
@@ -39,10 +39,10 @@ TODO:
             operators.
             - [ ]  For that matter, consider making a dedicated terminal node type
     - [X]  Make sure you can handle floating point math reasonably
-    - [ ]  RPN mode
+    - [X]  RPN mode
         - [X]  Will be best served with a new, stack-based backend, which should be
             much easier to implement
-        - [ ]  Add highlighting to show which terms on the stack a given operation
+        - [X]  Add highlighting to show which terms on the stack a given operation
             will effect!
     - [ ]  Multiple themes
     - [X]  Be able to recall elements from history
