@@ -1,5 +1,6 @@
 const DECIMAL_PLACES = 8;
 const prefixUnaryOperations = ["sqrt", "sin", "cos", "tan", "ln"];
+const alphabeticalSymbols = ["sqrt", "sin", "cos", "tan", "ln", "e"]; //used in hibernated code.
 
 /** 
  * Takes some set of calculator inputs, evaluates them, and returns the result.
@@ -92,7 +93,6 @@ function evalUnaryTerm(val, op) {
             return Number(Math.log(val).toFixed(DECIMAL_PLACES));
     }
     return NaN;
-
 }
 
 function tokenizeInput(input) {
@@ -124,7 +124,27 @@ function tokenizeInput(input) {
             tokens.push(inArr[i]);
             ++i;
         }
+        /*
+        I wrote and tested this "optimization", then decided that while it was more clever than "add more if
+        statements", it's way less clear. I'm keeping it in case it's useful in the future; if I
+        have more operations in the future, it might be more scaleable - assuming that none of
+        the operations are strict substrings of other, longer operations...
 
+        else {
+            let j = 1;
+            while (j < 5) {
+                if (alphabeticalSymbols.includes(inArr.slice(i, i+j).join(""))) {
+                    tokens.push(inArr.slice(i, i+j).join(""));
+                    i = i + j;
+                    j = 7; //Sentry value greater than 4
+                }
+                j++;
+            }
+            if (j != 8) {
+                throw new Error("Invalid input");
+            }
+        }
+        */
         else if ((inArr.slice(i, i+4)).join("") == "sqrt") {
             tokens.push("sqrt");
             i += 4;
@@ -149,10 +169,10 @@ function tokenizeInput(input) {
             tokens.push("e");
             ++i;
         }
-            
         else {
             throw new Error("Invalid input");
         }
+            
     }
     return tokens;
 }
@@ -252,7 +272,7 @@ class Parser {
         }
         return node;
     }
-
+    
     parsePrefixUnary() {
         while (prefixUnaryOperations.includes(this.curToken)) {
             let operation = this.curToken;

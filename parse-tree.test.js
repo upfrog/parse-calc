@@ -58,6 +58,10 @@ describe("Test unary prefix functions", () => {
     test("Test that ln(e) is 1", () => {
         expect(calc("ln(e)")).toBe(1);
     })
+
+    test("Test that successive operators evaluate correctly", () => {
+        expect(calc("sqrtsqrt81")).toBe(3);
+    })
 });
 
 describe("Test unary postfix functions", () => {
