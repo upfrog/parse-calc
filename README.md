@@ -1,4 +1,6 @@
-This is a not-completely-basic calculator webapp written in JavaScript. It uses a parse tree to correctly calculate complicated expressions.
+Hosted at http://parsecalcbucket.s3-website-us-east-1.amazonaws.com/ until I get some DNS issues ironed out.
+
+This is a not-completely-basic calculator webapp written in JavaScript. It uses a parse tree to correctly calculate complicated expressions. It also includes a reverse Polish notation mode.
 
 Supported operations:
 - Addition
@@ -12,6 +14,7 @@ Supported operations:
 - Basic trig functions
 
 Other features:
+- reverse Polish notation mode
 - Operation history with click-to-recall functionality
 - Keyboard support
 
@@ -22,7 +25,7 @@ TODO:
 - [X] Build some test cases with the current tree structure
 - [X] Fix any bugs
 - [X] Build starter GUI
-- [ ] Deploy
+- [X] Deploy
 - [X] More rigorous input validation
 - [X] Add new features!
    - [X] Record history
